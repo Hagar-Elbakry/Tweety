@@ -7,5 +7,3 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisterUserController::class,'register'])->name('register');
     Route::post('/login', [AuthenticatedUserController::class,'login'])->name('login');
 });
-
-
