@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedUserController extends Controller
@@ -24,5 +25,13 @@ class AuthenticatedUserController extends Controller
                     ]
                 ]);
             }
+    }
+
+    public function logout(Request $request) {
+        $request->user()->tokens()->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'User logged out successfully'
+        ]);
     }
 }
