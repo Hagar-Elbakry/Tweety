@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1\Auth;
 
+use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Resources\UserResource;
@@ -17,6 +18,7 @@ class RegisterUserController extends Controller
             $user = User::query()->create($data);
             $token = $user->createToken('auth_token.' . $user->username)->plainTextToken;
 
+            UserRegistered::dispatch($user);
             return response()->json([
                 'success' => true,
                 'message' => 'User created successfully',
