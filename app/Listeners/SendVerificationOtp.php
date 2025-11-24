@@ -3,14 +3,16 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
+use App\Mail\VerifyEmail;
+use Ichtrojan\Otp\Otp;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Mail\UserRegistered as MailRegistered;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class SendWelcomeEmail implements ShouldQueue
+class SendVerificationOtp implements ShouldQueue
 {
 
-    public $queue = 'welcome';
+    public $queue = 'otp';
     /**
      * Create the event listener.
      */
@@ -24,6 +26,6 @@ class SendWelcomeEmail implements ShouldQueue
      */
     public function handle(UserRegistered $event): void
     {
-        Mail::to($event->user)->send(new MailRegistered($event->user));
+        Mail::to($event->user)->send(new VerifyEmail($event->user));
     }
 }

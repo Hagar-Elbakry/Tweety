@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\Auth\AuthenticatedUserController;
+use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 
 Route::prefix('v1')->group(function () {
@@ -9,5 +10,7 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
+    Route::get('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
     Route::post('/logout', [AuthenticatedUserController::class,'logout'])->name('logout');
 });
