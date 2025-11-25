@@ -88,4 +88,19 @@ class PasswordResetController extends Controller
                 'message' => 'Your password has been reset'
             ]);
     }
+
+    public function resendOtp(ForgetPasswordRequest $request) {
+        $user = User::where('email', $request->email)->first();
+        if(!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+        Mail::to($user)->send(new ResetPassword($user));
+        return response()->json([
+            'success' => true,
+            'message' => 'We have sent an otp to reset your password'
+        ]);
+    }
 }
