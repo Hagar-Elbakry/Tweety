@@ -11,7 +11,6 @@ Route::prefix('v1')->group(function () {
     Route::post('/forget-password', [PasswordResetController::class,'sendOtp'])->name('sendOtp');
     Route::post('/verify-otp', [PasswordResetController::class,'verifyOtp'])->name('verifyOtp');
     Route::post('/reset-password', [PasswordResetController::class,'resetPassword'])->name('resetPassword');
-    Route::post('/resend-otp', [PasswordResetController::class,'resendOtp'])->name('resendOtp');
 });
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {

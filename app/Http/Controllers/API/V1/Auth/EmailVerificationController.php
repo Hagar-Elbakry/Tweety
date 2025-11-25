@@ -33,6 +33,7 @@ class EmailVerificationController extends Controller
                'message' => 'Invalid Or Expired OTP'
            ], 401);
        }
+
        $user->update([
            'email_verified_at' => now()
        ]);
@@ -51,6 +52,7 @@ class EmailVerificationController extends Controller
                 'message' => 'User already verified'
             ]);
         }
+
         Mail::to($user)->queue(new VerifyEmail($user));
         return response()->json([
             'success' => true,

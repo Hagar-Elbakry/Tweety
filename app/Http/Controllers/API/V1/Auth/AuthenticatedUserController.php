@@ -7,13 +7,12 @@ use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthenticatedUserController extends Controller
 {
     public function login(LoginUserRequest $request) {
-        $credentials = $request->validated();
+
         $user = User::where('email', $request->email)->first();
         if(!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -21,6 +20,7 @@ class AuthenticatedUserController extends Controller
                 'message' => 'The provided credentials do not match our records.',
             ]);
         }
+
         $token = $user->createToken('auth-token.' . $user->email)->plainTextToken;
                 return response()->json([
                     'success' => true,
