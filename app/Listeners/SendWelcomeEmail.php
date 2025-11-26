@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 class SendWelcomeEmail implements ShouldQueue
 {
 
-    public $queue = 'welcome';
     /**
      * Create the event listener.
      */

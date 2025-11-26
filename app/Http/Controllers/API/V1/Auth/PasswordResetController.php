@@ -29,7 +29,7 @@ class PasswordResetController extends Controller
                 ], 404);
             }
 
-            Mail::to($user)->send(new ResetPassword($user));
+            Mail::to($user)->queue(new ResetPassword($user));
             return response()->json([
                 'success' => true,
                 'message' => 'We have sent an otp to reset your password'
@@ -48,7 +48,10 @@ class PasswordResetController extends Controller
         $tempToken = Str::random(60);
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
-            ['token' => $tempToken]
+            [
+                'token' => $tempToken,
+                'created_at' => now()
+            ]
         );
 
         return response()->json([

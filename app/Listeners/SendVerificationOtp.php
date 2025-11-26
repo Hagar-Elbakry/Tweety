@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 class SendVerificationOtp implements ShouldQueue
 {
 
-    public $queue = 'otp';
     /**
      * Create the event listener.
      */

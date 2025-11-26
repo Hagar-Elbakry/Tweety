@@ -4,10 +4,13 @@ use App\Http\Controllers\API\V1\Auth\AuthenticatedUserController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
+use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisterUserController::class,'register'])->name('register');
     Route::post('/login', [AuthenticatedUserController::class,'login'])->name('login');
+    Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
+    Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
     Route::post('/forget-password', [PasswordResetController::class,'sendOtp'])->name('sendOtp');
     Route::post('/verify-otp', [PasswordResetController::class,'verifyOtp'])->name('verifyOtp');
     Route::post('/reset-password', [PasswordResetController::class,'resetPassword'])->name('resetPassword');
