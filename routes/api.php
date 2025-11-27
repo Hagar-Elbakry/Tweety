@@ -25,5 +25,6 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::controller(PostController::class)->prefix('posts')->as('posts.')->group(function () {
         Route::post('', 'store')->name('store');
         Route::patch('{post}', 'update')->name('update');
+        Route::delete('{post}', 'destroy')->name('destroy');
     });
 });

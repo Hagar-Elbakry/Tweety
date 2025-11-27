@@ -38,4 +38,19 @@ class PostController extends Controller
             'data' => new PostResource($post)
         ]);
     }
+
+    public function destroy(Post $post) {
+        if(request()->user()->cannot('delete', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to delete this post',
+            ], 403);
+        }
+
+        $post->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deleted successfully',
+        ]);
+    }
 }
