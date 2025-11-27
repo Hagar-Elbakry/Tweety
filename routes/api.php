@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
+use App\Http\Controllers\PostController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisterUserController::class,'register'])->name('register');
@@ -20,4 +21,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
     Route::get('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
     Route::post('/logout', [AuthenticatedUserController::class,'logout'])->name('logout');
+
+    Route::controller(PostController::class)->prefix('posts')->as('posts.')->group(function () {
+        Route::post('', 'store')->name('store');
+    });
 });
