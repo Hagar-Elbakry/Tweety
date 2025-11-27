@@ -20,4 +20,22 @@ class PostController extends Controller
             'data' => new PostResource($post)
         ]);
     }
+
+    public function update(StorePostRequest $request, Post $post) {
+        if($request->user()->cannot('update', $post)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to update this post',
+            ], 403);
+        }
+        $post->update([
+            'body' => $request->body,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post updated successfully',
+            'data' => new PostResource($post)
+        ]);
+    }
 }
