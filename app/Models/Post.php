@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 #[UsePolicy(PostPolicy::class)]
 class Post extends Model
 {
-    protected $fillable = ['body', 'user_id'];
+    protected $fillable = ['body', 'image' ,'user_id'];
 
     public function user() {
         return $this->belongsTo(User::class);

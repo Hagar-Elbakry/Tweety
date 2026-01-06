@@ -5,7 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\API\V1\PostController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisterUserController::class,'register'])->name('register');
