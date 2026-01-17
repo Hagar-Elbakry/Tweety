@@ -16,9 +16,6 @@ use Laravel\Socialite\Socialite;
 class UserService
 {
     protected $otp;
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         $this->otp = new Otp();
@@ -28,7 +25,7 @@ class UserService
     {
         $data = $request->validated();
         $user = User::query()->create($data);
-        $token = $user->createToken('auth_token.'.$user->username)->plainTextToken;
+        $token = $this->getToken($user);
 
         UserRegistered::dispatch($user);
         return [
@@ -39,11 +36,11 @@ class UserService
 
     public function loginUser($request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = $this->getUser($request);
         if (!$user || !Hash::check($request->password, $user->password)) {
             return null;
         }
-        $token = $user->createToken('auth-token.'.$user->email)->plainTextToken;
+        $token = $this->getToken($user);
         return [
             'user' => $user,
             'token' => $token
@@ -72,7 +69,7 @@ class UserService
                 'provider_id' => $googleUser->getId(),
             ]
         );
-        $token = $user->createToken('auth-token.'.$user->username)->plainTextToken;
+        $token = $this->getToken($user);
 
         UserRegistered::dispatch($user);
 
@@ -87,7 +84,7 @@ class UserService
          if(!$validatedOtp->status) {
                 return null;
          }
-            $user = User::where('email', $request->email)->first();
+            $user = $this->getUser($request);
             $user->update([
                 'email_verified_at' => now()
             ]);
@@ -107,7 +104,7 @@ class UserService
 
     public function sendPasswordResetOtp($request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = $this->getUser($request);
         Mail::to($user)->queue(new ResetPassword($user));
     }
 
@@ -134,12 +131,20 @@ class UserService
         if(!$reset) {
            throw new \Exception('Invalid token');
         }
-        $user = User::where('email', $reset->email)->first();
+        $user =$this->getUser($request);
         if(!$user) {
            throw new \Exception('User not found');
         }
         $user->update([
             'password' => Hash::make($request->password)
         ]);
+    }
+    public function getToken(User $user): string
+    {
+        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
+    }
+    public function getUser($request)
+    {
+        return User::where('email', $request->email)->first();
     }
 }
