@@ -13,7 +13,6 @@ class RegisterUserController extends Controller
 {
     public function register(RegisterUserRequest $request) {
             $data = $request->validated();
-            $data['password'] = Hash::make($data['password']);
             $user = User::query()->create($data);
             $token = $user->createToken('auth_token.' . $user->username)->plainTextToken;
 
@@ -26,6 +25,6 @@ class RegisterUserController extends Controller
                     'user' => new UserResource($user),
                     'token' => $token,
                 ]
-            ]);
+            ], 201);
     }
 }

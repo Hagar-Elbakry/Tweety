@@ -50,7 +50,7 @@ class EmailVerificationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User already verified'
-            ]);
+            ], 400);
         }
 
         Mail::to($user)->queue(new VerifyEmail($user));

@@ -23,7 +23,7 @@ class PostController extends Controller
             'success' => true,
             'message' => 'Post created successfully',
             'data' => new PostResource($post)
-        ]);
+        ], 201);
     }
 
     public function update(StorePostRequest $request, Post $post) {

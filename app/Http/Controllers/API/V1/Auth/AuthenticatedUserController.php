@@ -18,7 +18,7 @@ class AuthenticatedUserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'The provided credentials do not match our records.',
-            ]);
+            ], 401);
         }
 
         $token = $user->createToken('auth-token.' . $user->email)->plainTextToken;
