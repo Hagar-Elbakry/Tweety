@@ -7,23 +7,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterUserController extends Controller
 {
+    protected $userService;
+    public function __construct(UserService $userService) {
+        $this->userService = $userService;
+    }
     public function register(RegisterUserRequest $request) {
-            $data = $request->validated();
-            $user = User::query()->create($data);
-            $token = $user->createToken('auth_token.' . $user->username)->plainTextToken;
-
-            UserRegistered::dispatch($user);
+        $result = $this->userService->createUser($request);
 
             return response()->json([
                 'success' => true,
                 'message' => 'User created successfully',
                 'data' => [
-                    'user' => new UserResource($user),
-                    'token' => $token,
+                    'user' => new UserResource($result['user']),
+                    'token' => $result['token'],
                 ]
             ], 201);
     }
