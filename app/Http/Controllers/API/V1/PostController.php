@@ -2,69 +2,40 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
+    protected $postService;
+    public function __construct(PostService $postService) {
+        $this->postService = $postService;
+    }
     public function store(StorePostRequest $request) {
-        $data = $request->validated();
-        if($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
-        }
-        $data['user_id'] = $request->user()->id;
-        $post = Post::create($data);
+        $post = $this->postService->createPost($request);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Post created successfully',
-            'data' => new PostResource($post)
-        ], 201);
+        return ApiResponse::success(message: 'Post created successfully', data: new PostResource($post), status: 201);
     }
 
     public function update(StorePostRequest $request, Post $post) {
-        $data = $request->validated();
-        if($request->user()->cannot('update', $post)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You are not authorized to update this post',
-            ], 403);
+        $post = $this->postService->updatePost($request, $post);
+        if(!$post) {
+            return ApiResponse::error(message: 'You are not authorized to update this post', status: 403);
         }
-        if($request->hasFile('image')) {
-            $oldImage = $post->image;
-            if($oldImage) {
-                Storage::delete($oldImage);
-            }
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
-        }
-        $post->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Post updated successfully',
-            'data' => new PostResource($post)
-        ]);
+        return ApiResponse::success(message: 'Post updated successfully', data: new PostResource($post));
     }
 
     public function destroy(Post $post) {
-        if(request()->user()->cannot('delete', $post)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You are not authorized to delete this post',
-            ], 403);
+        $result = $this->postService->deletePost($post);
+        if(!$result) {
+            return ApiResponse::error(message: 'You are not authorized to delete this post', status: 403);
         }
-        if($post->image) {
-            Storage::delete($post->image);
-        }
-        $post->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Post deleted successfully',
-        ]);
+
+        return ApiResponse::success(message: 'Post deleted successfully');
     }
 }

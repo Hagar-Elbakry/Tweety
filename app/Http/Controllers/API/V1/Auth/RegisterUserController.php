@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers\API\V1\Auth;
 
-use App\Events\UserRegistered;
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserService;
 
 class RegisterUserController extends Controller
 {
+    protected $userService;
+    public function __construct(UserService $userService) {
+        $this->userService = $userService;
+    }
     public function register(RegisterUserRequest $request) {
-            $data = $request->validated();
-            $user = User::query()->create($data);
-            $token = $user->createToken('auth_token.' . $user->username)->plainTextToken;
+        $result = $this->userService->createUser($request);
 
-            UserRegistered::dispatch($user);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'User created successfully',
-                'data' => [
-                    'user' => new UserResource($user),
-                    'token' => $token,
-                ]
-            ], 201);
+        return ApiResponse::success(
+            message: 'User created successfully',
+            data: [
+                'user' => new UserResource($result['user']),
+                'token' => $result['token'],
+            ],
+            status: 201
+        );
     }
 }

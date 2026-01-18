@@ -2,61 +2,34 @@
 
 namespace App\Http\Controllers\API\V1\Auth;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailRequest;
-use App\Mail\VerifyEmail;
-use App\Models\User;
-use Ichtrojan\Otp\Otp;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+use App\Services\UserService;
 
 class EmailVerificationController extends Controller
 {
-    private $otp;
-    public function __construct()
+    protected $userService;
+
+    public function __construct(UserService $userService)
     {
-        $this->otp = new Otp();
+        $this->userService = $userService;
     }
     public function verify (VerifyEmailRequest $request) {
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
+        $result = $this->userService->verifyUserEmail($request);
+        if(!$result) {
+            return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
         }
 
-        $validatedOtp = $this->otp->validate($request->email, $request->otp);
-       if(!$validatedOtp->status) {
-           return response()->json([
-               'success' => false,
-               'message' => 'Invalid Or Expired OTP'
-           ], 401);
-       }
-
-       $user->update([
-           'email_verified_at' => now()
-       ]);
-
-       return response()->json([
-           'success' => true,
-           'message' => 'User verified successfully'
-       ]);
+        return ApiResponse::success(message: 'User verified successfully');
     }
 
     public function resend() {
-        $user = Auth::user();
-        if($user->hasVerifiedEmail()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User already verified'
-            ], 400);
+        $result = $this->userService->resendEmailVerificationOtp();
+        if(!$result) {
+            return ApiResponse::error(message: 'User already verified');
         }
 
-        Mail::to($user)->queue(new VerifyEmail($user));
-        return response()->json([
-            'success' => true,
-            'message' => 'Resend Email Verification otp successfully'
-        ]);
+        return ApiResponse::success(message: 'Resend verification otp successfully');
     }
 }
