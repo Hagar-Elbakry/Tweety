@@ -6,6 +6,7 @@ use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 use App\Http\Controllers\API\V1\PostController;
+use App\Http\Controllers\API\V1\ProfileController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisterUserController::class,'register'])->name('register');
@@ -26,5 +27,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('', 'store')->name('store');
         Route::patch('{post}', 'update')->name('update');
         Route::delete('{post}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(ProfileController::class)->prefix('profile')->as('profile.')->group(function () {
+        Route::patch('/{user:username}', 'update')->name('update');
     });
 });
