@@ -14,7 +14,7 @@ class RegisterUserController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function register(RegisterUserRequest $request)
+    public function __invoke(RegisterUserRequest $request)
     {
         try {
             $data = $request->validated();

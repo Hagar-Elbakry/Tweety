@@ -8,7 +8,7 @@ use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 use App\Http\Controllers\API\V1\PostController;
 
 Route::prefix('v1')->group(function () {
-    Route::post('/register', [RegisterUserController::class, 'register'])->name('register');
+    Route::post('/register', RegisterUserController::class)->name('register');
     Route::post('/login', [AuthenticatedUserController::class, 'login'])->name('login')->middleware('throttle:login');
 
     Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
