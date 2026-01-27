@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PostService
@@ -15,42 +16,53 @@ class PostService
         //
     }
 
-    public function createPost($request) {
-        $data = $request->validated();
-        if($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
+    public function create($data) {
+        if(isset($data['image'])) {
+            $data['image'] = $this->UploadImage($data['image']);;
         }
-        $data['user_id'] = $request->user()->id;
-        $post = Post::create($data);
-        return $post;
+       $post =  Post::create($data);
+        return $post->load('user');
     }
 
-    public function updatePost($request, $post) {
-        $data = $request->validated();
-        if($request->user()->cannot('update', $post)) {
-            return null;
-        }
-        if($request->hasFile('image')) {
-            $oldImage = $post->image;
-            if($oldImage) {
-                Storage::delete($oldImage);
+    public function update($data, Post $post) {
+        $newImagePath = null;
+        $oldImagePath = $post->image;
+        return DB::transaction(function() use ($data, $post, &$newImagePath, &$oldImagePath) {
+            try{
+                if(isset($data['image'])) {
+                    $newImagePath = $this->UploadImage($data['image']);
+                    $data['image'] =  $newImagePath;
+                }
+                $post->update($data);
+                if($newImagePath && $oldImagePath) {
+                    $this->deleteImage($oldImagePath);
+                }
+                return $post;
+            } catch(\Exception $e) {
+                if ($newImagePath) {
+                    $this->deleteImage($newImagePath);
+                }
+                throw $e;
             }
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
-        }
-        $post->update($data);
-        return $post;
+        });
     }
 
-    public function deletePost($post) {
-        if(request()->user()->cannot('delete', $post)) {
-            return false;
+    public function delete(Post $post) {
+        $imagePath = $post->image;
+        if($post->delete()) {
+            if($imagePath) {
+                $this->deleteImage($imagePath);
+            }
         }
-        if($post->image) {
-            Storage::delete($post->image);
-        }
-        $post->delete();
-        return true;
+    }
+
+    private function UploadImage($image)
+    {
+        return $image->store('posts', 'public');
+    }
+
+    private function deleteImage($path)
+    {
+        Storage::disk('public')->delete($path);
     }
 }

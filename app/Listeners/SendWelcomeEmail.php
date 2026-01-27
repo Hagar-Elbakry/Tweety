@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\UserRegistered;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Mail\UserRegistered as MailRegistered;
+use App\Mail\WelcomeUserMail as MailRegistered;
 use Illuminate\Support\Facades\Mail;
 
 class SendWelcomeEmail implements ShouldQueue
@@ -17,6 +17,7 @@ class SendWelcomeEmail implements ShouldQueue
     {
         //
     }
+
 
     /**
      * Handle the event.

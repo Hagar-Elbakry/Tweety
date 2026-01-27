@@ -5,16 +5,16 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Services\UserService;
+use App\Services\AuthenticationService;
 
 class SocialAuthController extends Controller
 {
-    protected  $userService;
-    public function __construct(UserService $userService) {
-        $this->userService = $userService;
-    }
+    public function __construct(
+        protected AuthenticationService $userService
+    )
+    {}
     public function redirectToGoogle() {
-        $redirectUrl = $this->userService->redirectUserToGoogle();
+        $redirectUrl = $this->userService->redirectToGoogle();
         return response()->json([
             'url' => $redirectUrl,
         ]);

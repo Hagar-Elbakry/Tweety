@@ -6,18 +6,19 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Resources\UserResource;
-use App\Services\UserService;
+use App\Services\AuthenticationService;
 use Illuminate\Http\Request;
 
 class AuthenticatedUserController extends Controller
 {
-    protected  $userService;
-    public function __construct(UserService $userService) {
-        $this->userService = $userService;
-    }
+
+    public function __construct(
+        protected AuthenticationService $userService
+    ) {}
     public function login(LoginUserRequest $request)
     {
-        $result = $this->userService->loginUser($request);
+        $data = $request->validated();
+        $result = $this->userService->login($data);
         if (!$result) {
             return ApiResponse::error(message: 'The provided credentials do not match our records.', status: 401);
         }
@@ -32,7 +33,7 @@ class AuthenticatedUserController extends Controller
     }
 
     public function logout(Request $request) {
-        $this->userService->logouUser($request);
+        $this->userService->logout($request);
         return ApiResponse::success(message: 'User logged out successfully');
     }
 }

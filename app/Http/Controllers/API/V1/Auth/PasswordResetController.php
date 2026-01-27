@@ -7,36 +7,34 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgetPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
-use App\Services\UserService;
+use App\Services\AuthenticationService;
 
 class PasswordResetController extends Controller
 {
-    protected $userService;
-    public function __construct(UserService $userService) {
-        $this->userService = $userService;
-    }
+    public function __construct(
+        protected AuthenticationService $userService
+    )
+    {}
     public function sendOtp(ForgetPasswordRequest $request) {
-        $this->userService->sendPasswordResetOtp($request);
+        $data = $request->validated();
+        $this->userService->sendPasswordResetOtp($data);
 
         return ApiResponse::success(message: 'We have sent an otp to reset your password');
     }
 
     public function verifyOtp(VerifyOtpRequest $request) {
-        $tempToken = $this->userService->verifyOtp($request);
-        if (!$tempToken) {
+        $data = $request->validated();
+        $token = $this->userService->verifyOtp($data);
+        if (!$token) {
             return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
         }
 
-        return ApiResponse::success(message: 'We have sent an otp to reset your password', data: ['token' => $tempToken]);
+        return ApiResponse::success(message: 'OTP verified. You can now reset your password.', data: ['token' => $token]);
     }
 
     public function resetPassword(ResetPasswordRequest $request) {
-        try{
-            $this->userService->resetPassword($request);
-        }catch (\Exception $e){
-            return ApiResponse::error(message: $e->getMessage(), status: 422);
-        }
-
-        return ApiResponse::success(message: 'Your password has been reset');
+            $data = $request->validated();
+            $this->userService->resetPassword($data);
+            return ApiResponse::success(message: 'Your password has been reset');
     }
 }
