@@ -9,30 +9,32 @@ use App\Services\AuthenticationService;
 
 class EmailVerificationController extends Controller
 {
-
     public function __construct(
         protected AuthenticationService $userService
-    )
-    {}
-    public function verify (VerifyEmailRequest $request) {
+    ) {}
+
+    public function verify(VerifyEmailRequest $request)
+    {
         $data = $request->validated();
         $result = $this->userService->verifyEmail($data);
-        if(!$result) {
+        if (! $result) {
             return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
         }
 
         return ApiResponse::success(message: 'User verified successfully');
     }
 
-    public function resend() {
-        try{
+    public function resend()
+    {
+        try {
             $result = $this->userService->resendEmailVerificationOtp();
-            if(!$result) {
+            if (! $result) {
                 return ApiResponse::error(message: 'User already verified');
             }
+
             return ApiResponse::success(message: 'Resend verification otp successfully');
         } catch (\Exception $e) {
-            return ApiResponse::error(message:'Could not send verification code, please try again later.', status: 500);
+            return ApiResponse::error(message: 'Could not send verification code, please try again later.', status: 500);
         }
     }
 }

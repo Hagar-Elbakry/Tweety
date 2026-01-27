@@ -16,7 +16,9 @@ class PostController extends Controller
     public function __construct(
         protected PostService $postService
     ) {}
-    public function store(StorePostRequest $request) {
+
+    public function store(StorePostRequest $request)
+    {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
         $post = $this->postService->create($data);
@@ -24,14 +26,18 @@ class PostController extends Controller
         return ApiResponse::success(message: 'Post created successfully', data: new PostResource($post), status: 201);
     }
 
-    public function update(UpdatePostRequest $request, Post $post) {
+    public function update(UpdatePostRequest $request, Post $post)
+    {
         $data = $request->validated();
         $post = $this->postService->update($data, $post);
+
         return ApiResponse::success(message: 'Post updated successfully', data: new PostResource($post));
     }
 
-    public function destroy(DeletePostRequest $request, Post $post) {
-       $this->postService->delete($post);
+    public function destroy(DeletePostRequest $request, Post $post)
+    {
+        $this->postService->delete($post);
+
         return ApiResponse::success(message: 'Post deleted successfully');
     }
 }

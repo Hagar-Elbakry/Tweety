@@ -14,14 +14,14 @@ class ResetPassword extends Mailable
     use Queueable, SerializesModels;
 
     private $otp;
+
     /**
      * Create a new message instance.
      */
     public function __construct(
-        Public User $user,
+        public User $user,
         public string $otpCode
-    )
-    {}
+    ) {}
 
     /**
      * Get the message envelope.

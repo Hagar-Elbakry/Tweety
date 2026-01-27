@@ -16,15 +16,13 @@ use Laravel\Socialite\Socialite;
 
 class AuthenticationService
 {
-
     public function __construct(
         protected Otp $otp
-    )
-    {}
+    ) {}
 
     public function register($data)
     {
-        return DB::transaction(function() use ($data) {
+        return DB::transaction(function () use ($data) {
             $user = User::create($data);
             $token = $this->getToken($user);
             $otpCode = $this->generateOtp($user->email);
@@ -38,10 +36,11 @@ class AuthenticationService
     public function login($data)
     {
         $user = $this->authenticate($data['email'], $data['password']);
-        if(!$user) {
+        if (! $user) {
             return null;
         }
         $token = $this->getToken($user);
+
         return compact('user', 'token');
     }
 
@@ -50,16 +49,20 @@ class AuthenticationService
         $request->user()->currentAccessToken()->delete();
     }
 
-    public function redirectToGoogle() {
+    public function redirectToGoogle()
+    {
         $redirectUrl = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+
         return $redirectUrl;
     }
 
-    public function handleGoogleCallback() {
+    public function handleGoogleCallback()
+    {
         $googleUser = Socialite::driver('google')->stateless()->user();
-        return DB::transaction(function() use ($googleUser) {
+
+        return DB::transaction(function () use ($googleUser) {
             $user = User::where('email', $googleUser->getEmail())->first();
-            if(!$user) {
+            if (! $user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
@@ -72,32 +75,37 @@ class AuthenticationService
                 UserRegistered::dispatch($user, null);
             }
             $token = $this->getToken($user);
+
             return compact('user', 'token');
         });
     }
+
     public function verifyEmail($data)
     {
         $user = auth()->user();
-        return DB::transaction(function() use ($data, $user) {
+
+        return DB::transaction(function () use ($data, $user) {
             $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if(!$validatedOtp->status) {
-                    return null;
+            if (! $validatedOtp->status) {
+                return null;
             }
-                $user->update([
-                    'email_verified_at' => now()
-                ]);
-                return $user;
+            $user->update([
+                'email_verified_at' => now(),
+            ]);
+
+            return $user;
         });
     }
 
     public function resendEmailVerificationOtp()
     {
-      $user = auth()->user();
-      if($user->hasVerifiedEmail()) {
-          return null;
-      }
-    $otpCode = $this->generateOtp($user->email);
-      Mail::to($user)->queue(new VerifyEmail($user, $otpCode));
+        $user = auth()->user();
+        if ($user->hasVerifiedEmail()) {
+            return null;
+        }
+        $otpCode = $this->generateOtp($user->email);
+        Mail::to($user)->queue(new VerifyEmail($user, $otpCode));
+
         return $user;
     }
 
@@ -108,29 +116,34 @@ class AuthenticationService
         Mail::to($user)->queue(new ResetPassword($user, $otpCode));
     }
 
-    public function verifyOtp($data) {
-        return DB::transaction(function() use ($data) {
+    public function verifyOtp($data)
+    {
+        return DB::transaction(function () use ($data) {
             $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-            if(!$validatedOtp->status) {
-                    return null;
+            if (! $validatedOtp->status) {
+                return null;
             }
             $user = $this->getUser($data['email']);
             $token = $user->createToken('password_reset.'.$user->username, ['reset-password'], now()->addMinutes(15))->plainTextToken;
+
             return $token;
         });
     }
 
-    public function resetPassword($data) {
+    public function resetPassword($data)
+    {
         $user = auth()->user();
         $user->update([
-            'password' => $data['password']
+            'password' => $data['password'],
         ]);
         $user->tokens()->delete();
     }
+
     private function getToken(User $user)
     {
         return $user->createToken('auth_token.'.$user->username, ['user-access'])->plainTextToken;
     }
+
     private function getUser($email)
     {
         return User::where('email', $email)->first();
@@ -139,27 +152,31 @@ class AuthenticationService
     private function authenticate($email, $password)
     {
         $user = $this->getUser($email);
-        if(!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             return null;
         }
+
         return $user;
     }
-    private  function generateOtp($email )
+
+    private function generateOtp($email)
     {
-        return  $this->otp->generate($email, 'numeric', 6, 15)->token;
+        return $this->otp->generate($email, 'numeric', 6, 15)->token;
     }
 
     private function generateUniqueUsername($name)
     {
         $username = Str::slug($name, '');
         $latestUsername = User::whereRaw("username REGEXP '^{$username}[0-9]*$'")
-            ->orderByRaw("LENGTH(username) DESC")
+            ->orderByRaw('LENGTH(username) DESC')
             ->orderByDesc('username')
             ->first();
-        if($latestUsername) {
+        if ($latestUsername) {
             $number = str_replace($username, '', $latestUsername->username);
-            return $username .  (is_numeric($number) ? (int)$number + 1 : 1);
+
+            return $username.(is_numeric($number) ? (int) $number + 1 : 1);
         }
+
         return $username;
     }
 }

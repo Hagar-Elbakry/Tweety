@@ -11,15 +11,15 @@ use Illuminate\Http\Request;
 
 class AuthenticatedUserController extends Controller
 {
-
     public function __construct(
         protected AuthenticationService $userService
     ) {}
+
     public function login(LoginUserRequest $request)
     {
         $data = $request->validated();
         $result = $this->userService->login($data);
-        if (!$result) {
+        if (! $result) {
             return ApiResponse::error(message: 'The provided credentials do not match our records.', status: 401);
         }
 
@@ -27,13 +27,15 @@ class AuthenticatedUserController extends Controller
             message: 'User logged in successfully',
             data: [
                 'user' => new UserResource($result['user']),
-                'token' => $result['token']
+                'token' => $result['token'],
             ]
         );
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $this->userService->logout($request);
+
         return ApiResponse::success(message: 'User logged out successfully');
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
 namespace Tests\Feature;
+
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
@@ -17,7 +19,7 @@ class AuthenticationTest extends TestCase
             'username' => 'testuser',
             'email' => 'test@gmail.com',
             'password' => $password,
-            'password_confirmation' => $password
+            'password_confirmation' => $password,
         ]);
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -41,15 +43,16 @@ class AuthenticationTest extends TestCase
         ]);
     }
 
-    public function test_user_can_login(): void {
+    public function test_user_can_login(): void
+    {
         $user = User::factory()->create([
             'username' => 'testuser',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         $response = $this->postJson('/api/v1/login', [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(200)
@@ -70,5 +73,3 @@ class AuthenticationTest extends TestCase
             ]);
     }
 }
-
-

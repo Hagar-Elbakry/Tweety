@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->email.$request->ip())
                 ->response(function (Request $request, array $headers) {
                     return ApiResponse::error(
-                        message: 'Too many login attempts. Retry after ' . $headers['Retry-After'] . ' seconds.',
+                        message: 'Too many login attempts. Retry after '.$headers['Retry-After'].' seconds.',
                         status: 429
                     );
                 });

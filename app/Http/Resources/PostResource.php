@@ -17,7 +17,7 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'body' => $this->body?: null,
+            'body' => $this->body ?: null,
             'image' => $this->image ? Storage::url($this->image) : null,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),

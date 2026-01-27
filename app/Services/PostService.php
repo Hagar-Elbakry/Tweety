@@ -16,29 +16,34 @@ class PostService
         //
     }
 
-    public function create($data) {
-        if(isset($data['image'])) {
-            $data['image'] = $this->UploadImage($data['image']);;
+    public function create($data)
+    {
+        if (isset($data['image'])) {
+            $data['image'] = $this->UploadImage($data['image']);
         }
-       $post =  Post::create($data);
+        $post = Post::create($data);
+
         return $post->load('user');
     }
 
-    public function update($data, Post $post) {
+    public function update($data, Post $post)
+    {
         $newImagePath = null;
         $oldImagePath = $post->image;
-        return DB::transaction(function() use ($data, $post, &$newImagePath, &$oldImagePath) {
-            try{
-                if(isset($data['image'])) {
+
+        return DB::transaction(function () use ($data, $post, &$newImagePath, &$oldImagePath) {
+            try {
+                if (isset($data['image'])) {
                     $newImagePath = $this->UploadImage($data['image']);
-                    $data['image'] =  $newImagePath;
+                    $data['image'] = $newImagePath;
                 }
                 $post->update($data);
-                if($newImagePath && $oldImagePath) {
+                if ($newImagePath && $oldImagePath) {
                     $this->deleteImage($oldImagePath);
                 }
+
                 return $post;
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 if ($newImagePath) {
                     $this->deleteImage($newImagePath);
                 }
@@ -47,10 +52,11 @@ class PostService
         });
     }
 
-    public function delete(Post $post) {
+    public function delete(Post $post)
+    {
         $imagePath = $post->image;
-        if($post->delete()) {
-            if($imagePath) {
+        if ($post->delete()) {
+            if ($imagePath) {
                 $this->deleteImage($imagePath);
             }
         }

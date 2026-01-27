@@ -3,13 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\WelcomeUserMail as MailRegistered;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
 class SendWelcomeEmail implements ShouldQueue
 {
-
     /**
      * Create the event listener.
      */
@@ -17,7 +16,6 @@ class SendWelcomeEmail implements ShouldQueue
     {
         //
     }
-
 
     /**
      * Handle the event.

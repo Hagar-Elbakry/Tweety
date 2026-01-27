@@ -19,8 +19,7 @@ class VerifyEmail extends Mailable
     public function __construct(
         public User $user,
         public string $otpCode
-    )
-    {}
+    ) {}
 
     /**
      * Get the message envelope.

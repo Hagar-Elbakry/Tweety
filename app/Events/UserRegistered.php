@@ -17,8 +17,8 @@ class UserRegistered
      */
     public function __construct(
         public User $user,
-        public  $otpCode
-    )  {}
+        public $otpCode
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.

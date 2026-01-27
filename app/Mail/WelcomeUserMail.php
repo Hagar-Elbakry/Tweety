@@ -38,7 +38,7 @@ class WelcomeUserMail extends Mailable
         return new Content(
             view: 'mail.registered',
             with: [
-                'username' => $this->user->username
+                'username' => $this->user->username,
             ]
         );
     }

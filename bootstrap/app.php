@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (ValidationException $e){
+        $exceptions->render(function (ValidationException $e) {
             return ApiResponse::error(
                 message: 'Validation Errors',
                 data: $e->errors(),
@@ -33,7 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
-        $exceptions->render(function (NotFoundHttpException $e){
+        $exceptions->render(function (NotFoundHttpException $e) {
             return ApiResponse::error(
                 message: 'The requested resource was not found.',
                 status: 404

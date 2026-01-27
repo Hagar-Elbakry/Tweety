@@ -11,16 +11,19 @@ class SocialAuthController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    )
-    {}
-    public function redirectToGoogle() {
+    ) {}
+
+    public function redirectToGoogle()
+    {
         $redirectUrl = $this->userService->redirectToGoogle();
+
         return response()->json([
             'url' => $redirectUrl,
         ]);
     }
 
-    public function handleGoogleCallback() {
+    public function handleGoogleCallback()
+    {
         $result = $this->userService->handleGoogleCallback();
 
         return ApiResponse::success(

@@ -12,12 +12,14 @@ class RegisterUserController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    )
-    {}
-    public function register(RegisterUserRequest $request) {
-        try{
+    ) {}
+
+    public function register(RegisterUserRequest $request)
+    {
+        try {
             $data = $request->validated();
             $result = $this->userService->register($data);
+
             return ApiResponse::success(
                 message: 'User created successfully',
                 data: [
