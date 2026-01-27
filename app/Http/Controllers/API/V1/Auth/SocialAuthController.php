@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class SocialAuthController extends Controller
 {
@@ -13,7 +14,7 @@ class SocialAuthController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function redirectToGoogle()
+    public function redirectToGoogle() : JsonResponse
     {
         $redirectUrl = $this->userService->redirectToGoogle();
 
@@ -22,7 +23,7 @@ class SocialAuthController extends Controller
         ]);
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback() : JsonResponse
     {
         $result = $this->userService->handleGoogleCallback();
 

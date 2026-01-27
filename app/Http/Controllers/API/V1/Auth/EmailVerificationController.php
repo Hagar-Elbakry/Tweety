@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailRequest;
 use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class EmailVerificationController extends Controller
 {
@@ -13,7 +14,7 @@ class EmailVerificationController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function verify(VerifyEmailRequest $request)
+    public function verify(VerifyEmailRequest $request) : JsonResponse
     {
         $data = $request->validated();
         $result = $this->userService->verifyEmail($data);
@@ -24,7 +25,7 @@ class EmailVerificationController extends Controller
         return ApiResponse::success(message: 'User verified successfully');
     }
 
-    public function resend()
+    public function resend() : JsonResponse
     {
         try {
             $result = $this->userService->resendEmailVerificationOtp();

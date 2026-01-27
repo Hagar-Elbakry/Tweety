@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthenticatedUserController extends Controller
@@ -15,7 +16,7 @@ class AuthenticatedUserController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function login(LoginUserRequest $request)
+    public function login(LoginUserRequest $request) : JsonResponse
     {
         $data = $request->validated();
         $result = $this->userService->login($data);
@@ -32,7 +33,7 @@ class AuthenticatedUserController extends Controller
         );
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request) : JsonResponse
     {
         $this->userService->logout($request);
 

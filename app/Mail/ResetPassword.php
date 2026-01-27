@@ -13,7 +13,6 @@ class ResetPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $otp;
 
     /**
      * Create a new message instance.
@@ -45,15 +44,5 @@ class ResetPassword extends Mailable
                 'otp' => $this->otpCode,
             ]
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

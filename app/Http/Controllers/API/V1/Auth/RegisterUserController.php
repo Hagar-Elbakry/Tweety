@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class RegisterUserController extends Controller
 {
@@ -14,7 +15,7 @@ class RegisterUserController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function __invoke(RegisterUserRequest $request)
+    public function __invoke(RegisterUserRequest $request) : JsonResponse
     {
         try {
             $data = $request->validated();
