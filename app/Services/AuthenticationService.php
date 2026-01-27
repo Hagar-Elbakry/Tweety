@@ -167,7 +167,7 @@ class AuthenticationService
     private function generateUniqueUsername($name)
     {
         $username = Str::slug($name, '');
-        $latestUsername = User::whereRaw("username REGEXP '^{$username}[0-9]*$'")
+        $latestUsername = User::whereRaw("username REGEXP ?" , ['^'.$username.'[0-9]*$'])
             ->orderByRaw('LENGTH(username) DESC')
             ->orderByDesc('username')
             ->first();
