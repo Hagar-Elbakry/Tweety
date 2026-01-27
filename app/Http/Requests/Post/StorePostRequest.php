@@ -22,8 +22,8 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => 'required_without:image|nullable|max:255',
-            'image' => 'required_without:body|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'body' => ['required_without:image', 'nullable', 'max:255'],
+            'image' => ['required_without:body', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
     }
 }

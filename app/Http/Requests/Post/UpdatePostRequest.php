@@ -22,8 +22,8 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => 'sometimes|nullable|max:255',
-            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'body' => ['sometimes','nullable','max:255'],
+            'image' => ['sometimes','nullable','image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ];
     }
 }
