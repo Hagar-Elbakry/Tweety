@@ -141,7 +141,7 @@ class AuthenticationService
 
     private function getToken(User $user) : string
     {
-        return $user->createToken('auth_token.'.$user->username, ['user-access'])->plainTextToken;
+        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
     }
 
     private function getUser(string $email) : ?User

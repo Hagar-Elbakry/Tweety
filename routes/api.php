@@ -16,11 +16,10 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/forget-password', [PasswordResetController::class, 'sendOtp'])->name('sendOtp');
     Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('verifyOtp');
-
-    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('resetPassword')->middleware(['auth:sanctum', 'abilities:reset-password']);
 });
 
-Route::prefix('v1')->middleware(['auth:sanctum', 'abilities:user-access'])->group(function () {
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('resetPassword')->middleware( 'abilities:reset-password');
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
     Route::get('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
