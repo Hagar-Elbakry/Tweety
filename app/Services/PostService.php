@@ -31,26 +31,22 @@ class PostService
     {
         $newImagePath = null;
         $oldImagePath = $post->image;
-
-        return DB::transaction(function () use ($data, $post, &$newImagePath, &$oldImagePath) {
-            try {
-                if (isset($data['image'])) {
-                    $newImagePath = $this->UploadImage($data['image']);
-                    $data['image'] = $newImagePath;
-                }
-                $post->update($data);
-                if ($newImagePath && $oldImagePath) {
-                    $this->deleteImage($oldImagePath);
-                }
-
-                return $post;
-            } catch (\Exception $e) {
-                if ($newImagePath) {
-                    $this->deleteImage($newImagePath);
-                }
-                throw $e;
+        try {
+            if (isset($data['image'])) {
+                $newImagePath = $this->UploadImage($data['image']);
+                $data['image'] = $newImagePath;
             }
-        });
+            $post->update($data);
+            if ($newImagePath && $oldImagePath) {
+                $this->deleteImage($oldImagePath);
+            }
+            return $post;
+        } catch (\Exception $e) {
+            if ($newImagePath) {
+                $this->deleteImage($newImagePath);
+            }
+            throw $e;
+        }
     }
 
     public function delete(Post $post) : void
