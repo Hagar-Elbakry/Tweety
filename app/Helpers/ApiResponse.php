@@ -2,23 +2,25 @@
 
 namespace App\Helpers;
 
+use Illuminate\Http\JsonResponse;
+
 class ApiResponse
 {
-    public static function success($message = '', $data = [], $status = 200)
+    public static function success(string $message = null, mixed $data = null, int $status = 200) : JsonResponse
     {
         return response()->json([
-            'success' => 'true',
+            'success' => true,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ], $status);
     }
 
-    public static function error($message = '', $data = [], $status = 400)
+    public static function error(string $message = null, mixed $data = null, int $status = 400) : JsonResponse
     {
         return response()->json([
-            'success' => 'false',
+            'success' => false,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ], $status);
     }
 }

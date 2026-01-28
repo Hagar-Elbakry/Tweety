@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PostService
 {
@@ -15,42 +17,55 @@ class PostService
         //
     }
 
-    public function createPost($request) {
-        $data = $request->validated();
-        if($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
+    public function create(array $data) : Post
+    {
+        if (isset($data['image'])) {
+            $data['image'] = $this->UploadImage($data['image']);
         }
-        $data['user_id'] = $request->user()->id;
         $post = Post::create($data);
-        return $post;
+
+        return $post->load('user');
     }
 
-    public function updatePost($request, $post) {
-        $data = $request->validated();
-        if($request->user()->cannot('update', $post)) {
-            return null;
-        }
-        if($request->hasFile('image')) {
-            $oldImage = $post->image;
-            if($oldImage) {
-                Storage::delete($oldImage);
+    public function update(array $data, Post $post) : Post
+    {
+        $newImagePath = null;
+        $oldImagePath = $post->image;
+        try {
+            if (isset($data['image'])) {
+                $newImagePath = $this->UploadImage($data['image']);
+                $data['image'] = $newImagePath;
             }
-            $imagePath = $request->file('image')->store('images');
-            $data['image'] = $imagePath;
+            $post->update($data);
+            if ($newImagePath && $oldImagePath) {
+                $this->deleteImage($oldImagePath);
+            }
+            return $post;
+        } catch (\Exception $e) {
+            if ($newImagePath) {
+                $this->deleteImage($newImagePath);
+            }
+            throw $e;
         }
-        $post->update($data);
-        return $post;
     }
 
-    public function deletePost($post) {
-        if(request()->user()->cannot('delete', $post)) {
-            return false;
+    public function delete(Post $post) : void
+    {
+        $imagePath = $post->image;
+        if ($post->delete()) {
+            if ($imagePath) {
+                $this->deleteImage($imagePath);
+            }
         }
-        if($post->image) {
-            Storage::delete($post->image);
-        }
-        $post->delete();
-        return true;
+    }
+
+    private function UploadImage(UploadedFile $image) : string
+    {
+        return $image->store('posts', 'public');
+    }
+
+    private function deleteImage(string $path) : void
+    {
+        Storage::disk('public')->delete($path);
     }
 }
