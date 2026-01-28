@@ -4,15 +4,12 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use function Laravel\Prompts\text;
 
-class UserRegistered extends Mailable
+class WelcomeUserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -41,18 +38,8 @@ class UserRegistered extends Mailable
         return new Content(
             view: 'mail.registered',
             with: [
-                'username' => $this->user->username
+                'username' => $this->user->username,
             ]
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

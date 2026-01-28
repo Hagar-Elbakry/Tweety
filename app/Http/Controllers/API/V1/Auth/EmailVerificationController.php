@@ -5,31 +5,37 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailRequest;
-use App\Services\UserService;
+use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class EmailVerificationController extends Controller
 {
-    protected $userService;
+    public function __construct(
+        protected AuthenticationService $userService
+    ) {}
 
-    public function __construct(UserService $userService)
+    public function verify(VerifyEmailRequest $request) : JsonResponse
     {
-        $this->userService = $userService;
-    }
-    public function verify (VerifyEmailRequest $request) {
-        $result = $this->userService->verifyUserEmail($request);
-        if(!$result) {
+        $data = $request->validated();
+        $result = $this->userService->verifyEmail($data);
+        if (! $result) {
             return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
         }
 
         return ApiResponse::success(message: 'User verified successfully');
     }
 
-    public function resend() {
-        $result = $this->userService->resendEmailVerificationOtp();
-        if(!$result) {
-            return ApiResponse::error(message: 'User already verified');
-        }
+    public function resend() : JsonResponse
+    {
+        try {
+            $result = $this->userService->resendEmailVerificationOtp();
+            if (! $result) {
+                return ApiResponse::error(message: 'User already verified');
+            }
 
-        return ApiResponse::success(message: 'Resend verification otp successfully');
+            return ApiResponse::success(message: 'Resend verification otp successfully');
+        } catch (\Exception $e) {
+            return ApiResponse::error(message: 'Could not send verification code, please try again later.', status: 500);
+        }
     }
 }

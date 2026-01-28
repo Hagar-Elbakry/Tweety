@@ -6,24 +6,31 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Resources\UserResource;
-use App\Services\UserService;
+use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class RegisterUserController extends Controller
 {
-    protected $userService;
-    public function __construct(UserService $userService) {
-        $this->userService = $userService;
-    }
-    public function register(RegisterUserRequest $request) {
-        $result = $this->userService->createUser($request);
+    public function __construct(
+        protected AuthenticationService $userService
+    ) {}
 
-        return ApiResponse::success(
-            message: 'User created successfully',
-            data: [
-                'user' => new UserResource($result['user']),
-                'token' => $result['token'],
-            ],
-            status: 201
-        );
+    public function __invoke(RegisterUserRequest $request) : JsonResponse
+    {
+        try {
+            $data = $request->validated();
+            $result = $this->userService->register($data);
+
+            return ApiResponse::success(
+                message: 'User created successfully',
+                data: [
+                    'user' => new UserResource($result['user']),
+                    'token' => $result['token'],
+                ],
+                status: 201
+            );
+        } catch (\Exception $e) {
+            return ApiResponse::error(message: 'Failed to register user, please try again later.', status: 500);
+        }
     }
 }
