@@ -16,7 +16,7 @@ class PasswordResetController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function sendOtp(ForgetPasswordRequest $request) : JsonResponse
+    public function sendOtp(ForgetPasswordRequest $request): JsonResponse
     {
         $data = $request->validated();
         $this->userService->sendPasswordResetOtp($data);
@@ -24,7 +24,7 @@ class PasswordResetController extends Controller
         return ApiResponse::success(message: 'We have sent an otp to reset your password');
     }
 
-    public function verifyOtp(VerifyOtpRequest $request) : JsonResponse
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
         $data = $request->validated();
         $token = $this->userService->verifyOtp($data);
@@ -35,7 +35,7 @@ class PasswordResetController extends Controller
         return ApiResponse::success(message: 'OTP verified. You can now reset your password.', data: ['token' => $token]);
     }
 
-    public function resetPassword(ResetPasswordRequest $request) : JsonResponse
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $data = $request->validated();
         $this->userService->resetPassword($data);

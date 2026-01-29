@@ -14,7 +14,7 @@ class SocialAuthController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function redirectToGoogle() : JsonResponse
+    public function redirectToGoogle(): JsonResponse
     {
         $redirectUrl = $this->userService->redirectToGoogle();
 
@@ -23,7 +23,7 @@ class SocialAuthController extends Controller
         ]);
     }
 
-    public function handleGoogleCallback() : JsonResponse
+    public function handleGoogleCallback(): JsonResponse
     {
         $result = $this->userService->handleGoogleCallback();
 

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Mail;
 
 class SendWelcomeEmail implements ShouldQueue
 {
-
     /**
      * Handle the event.
      */

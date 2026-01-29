@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Post;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -17,7 +16,7 @@ class PostService
         //
     }
 
-    public function create(array $data) : Post
+    public function create(array $data): Post
     {
         if (isset($data['image'])) {
             $data['image'] = $this->UploadImage($data['image']);
@@ -27,7 +26,7 @@ class PostService
         return $post->load('user');
     }
 
-    public function update(array $data, Post $post) : Post
+    public function update(array $data, Post $post): Post
     {
         $newImagePath = null;
         $oldImagePath = $post->image;
@@ -40,6 +39,7 @@ class PostService
             if ($newImagePath && $oldImagePath) {
                 $this->deleteImage($oldImagePath);
             }
+
             return $post;
         } catch (\Exception $e) {
             if ($newImagePath) {
@@ -49,7 +49,7 @@ class PostService
         }
     }
 
-    public function delete(Post $post) : void
+    public function delete(Post $post): void
     {
         $imagePath = $post->image;
         if ($post->delete()) {
@@ -59,12 +59,12 @@ class PostService
         }
     }
 
-    private function UploadImage(UploadedFile $image) : string
+    private function UploadImage(UploadedFile $image): string
     {
         return $image->store('posts', 'public');
     }
 
-    private function deleteImage(string $path) : void
+    private function deleteImage(string $path): void
     {
         Storage::disk('public')->delete($path);
     }

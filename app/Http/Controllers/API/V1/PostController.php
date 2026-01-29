@@ -18,7 +18,7 @@ class PostController extends Controller
         protected PostService $postService
     ) {}
 
-    public function store(StorePostRequest $request) : JsonResponse
+    public function store(StorePostRequest $request): JsonResponse
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
@@ -27,7 +27,7 @@ class PostController extends Controller
         return ApiResponse::success(message: 'Post created successfully', data: new PostResource($post), status: 201);
     }
 
-    public function update(UpdatePostRequest $request, Post $post) : JsonResponse
+    public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
         $data = $request->validated();
         $post = $this->postService->update($data, $post);
@@ -35,7 +35,7 @@ class PostController extends Controller
         return ApiResponse::success(message: 'Post updated successfully', data: new PostResource($post));
     }
 
-    public function destroy(DeletePostRequest $request, Post $post) : JsonResponse
+    public function destroy(DeletePostRequest $request, Post $post): JsonResponse
     {
         $this->postService->delete($post);
 

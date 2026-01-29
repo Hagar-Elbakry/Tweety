@@ -15,7 +15,7 @@ class RegisterUserController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function __invoke(RegisterUserRequest $request) : JsonResponse
+    public function __invoke(RegisterUserRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
