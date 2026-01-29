@@ -2,35 +2,48 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use App\Traits\UploadAble;
+use Exception;
+use Illuminate\Http\UploadedFile;
 
 class ProfileService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
+    use Uploadable;
+
+    public function update(array $data, User $user): User
     {
-        //
-    }
-
-    public function updateProfileDetails($request, $user) {
-        $data = $request->validated();
-        if($request->hasFile('avatar')) {
-            if($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        if (empty($data['password'])) {
+            unset($data['password']);
         }
 
-        if($request->hasFile('banner')) {
-            if($user->banner) {
-                Storage::disk('public')->delete($user->banner);
+        $images = [
+            'avatar' => ['oldPath' => $user->avatar, 'newPath' => null, 'directory' => 'avatars'],
+            'banner' => ['oldPath' => $user->banner, 'newPath' => null, 'directory' => 'banners'],
+        ];
+        try {
+            foreach ($images as $key => &$image) {
+                if (isset($data[$key]) && $data[$key] instanceof UploadedFile) {
+                    $image['newPath'] = $this->uploadImage($data[$key], $image['directory']);
+                    $data[$key] = $image['newPath'];
+                }
             }
-            $data['banner'] = $request->file('banner')->store('banners', 'public');
-        }
+            $user->update($data);
+            foreach ($images as $img) {
+                if ($img['newPath'] && $img['oldPath']) {
+                    $this->deleteImage($img['oldPath']);
+                }
+            }
 
-        $user->update($data);
-        return $user;
+            return $user;
+
+        } catch (Exception $e) {
+            foreach ($images as $img) {
+                if ($img['newPath']) {
+                    $this->deleteImage($img['newPath']);
+                }
+            }
+            throw $e;
+        }
     }
 }
