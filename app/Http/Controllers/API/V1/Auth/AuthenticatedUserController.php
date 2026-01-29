@@ -16,7 +16,7 @@ class AuthenticatedUserController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function login(LoginUserRequest $request) : JsonResponse
+    public function login(LoginUserRequest $request): JsonResponse
     {
         $data = $request->validated();
         $result = $this->userService->login($data);
@@ -33,7 +33,7 @@ class AuthenticatedUserController extends Controller
         );
     }
 
-    public function logout(Request $request) : JsonResponse
+    public function logout(Request $request): JsonResponse
     {
         $this->userService->logout($request);
 

@@ -14,7 +14,7 @@ class EmailVerificationController extends Controller
         protected AuthenticationService $userService
     ) {}
 
-    public function verify(VerifyEmailRequest $request) : JsonResponse
+    public function verify(VerifyEmailRequest $request): JsonResponse
     {
         $data = $request->validated();
         $result = $this->userService->verifyEmail($data);
@@ -25,7 +25,7 @@ class EmailVerificationController extends Controller
         return ApiResponse::success(message: 'User verified successfully');
     }
 
-    public function resend() : JsonResponse
+    public function resend(): JsonResponse
     {
         try {
             $result = $this->userService->resendEmailVerificationOtp();

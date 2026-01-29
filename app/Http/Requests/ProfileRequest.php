@@ -23,13 +23,13 @@ class ProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
+            'name' => ['required', 'string', 'max:255'],
             'username' => ['required', Rule::unique('users', 'username')->ignore($this->user)],
-            'email' => ['required','email', Rule::unique('users', 'email')->ignore($this->user)],
-            'password' => 'required|min:8|confirmed',
-            'avatar' => 'nullable|image|max:2048|mimes:jpeg,jpg,png',
-            'banner' => 'nullable|image|max:4096|mimes:jpeg,jpg,png',
-            'bio' => 'nullable|string|max:1000',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user)],
+            'password' => ['sometimes', 'nullable', 'min:8', 'confirmed'],
+            'avatar' => ['sometimes', 'nullable', 'image', 'max:2048', 'mimes:jpeg,jpg,png'],
+            'banner' => ['sometimes', 'nullable', 'image', 'max:4096', 'mimes:jpeg,jpg,png'],
+            'bio' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
 }
