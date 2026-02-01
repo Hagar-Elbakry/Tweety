@@ -9,9 +9,9 @@ use Illuminate\Http\UploadedFile;
 
 class ProfileService
 {
-    use Uploadable;
+    use UploadAble;
 
-    public function show(User $user)
+    public function show(User $user): User
     {
         return $user->load('posts');
     }

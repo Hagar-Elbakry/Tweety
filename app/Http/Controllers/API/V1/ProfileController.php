@@ -17,7 +17,7 @@ class ProfileController extends Controller
     ) {
     }
 
-    public function show(User $user)
+    public function show(User $user): JsonResponse
     {
         $profile = $this->profileService->show($user);
         return ApiResponse::success(
