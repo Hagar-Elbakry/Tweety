@@ -11,6 +11,11 @@ class ProfileService
 {
     use Uploadable;
 
+    public function show(User $user)
+    {
+        return $user->load('posts');
+    }
+
     public function update(array $data, User $user): User
     {
         if (empty($data['password'])) {

@@ -21,6 +21,7 @@ class ProfileResource extends JsonResource
             'avatar' => $this->avatar ? Storage::url($this->avatar) : null,
             'banner' => $this->banner ? Storage::url($this->banner) : null,
             'bio' => $this->bio ?? null,
+            'posts' => PostResource::collection($this->whenLoaded('posts')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

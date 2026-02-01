@@ -26,5 +26,6 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
+    Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile/{user:username}', [ProfileController::class, 'update'])->name('profile.update');
 });
