@@ -14,12 +14,12 @@ class ProfileController extends Controller
 {
     public function __construct(
         protected ProfileService $profileService
-    ) {
-    }
+    ) {}
 
     public function show(User $user): JsonResponse
     {
         $profile = $this->profileService->show($user);
+
         return ApiResponse::success(
             message: 'Profile fetched successfully.',
             data: new ProfileResource($profile),
