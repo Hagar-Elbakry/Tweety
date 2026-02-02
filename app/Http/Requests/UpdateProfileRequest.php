@@ -33,10 +33,10 @@ class UpdateProfileRequest extends FormRequest
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user)],
             'password' => ['sometimes', 'nullable', 'min:8', 'confirmed'],
             'avatar' => [
-                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024)
+                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024),
             ],
             'banner' => [
-                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024)
+                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024),
             ],
             'bio' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];

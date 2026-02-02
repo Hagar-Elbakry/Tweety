@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Post;
 use App\Traits\Uploadable;
 use Exception;
-use Illuminate\Http\UploadedFile;
 
 class PostService
 {
@@ -13,7 +12,7 @@ class PostService
 
     public function create(array $data): Post
     {
-        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
+        if (isset($data['image'])) {
             $data['image'] = $this->UploadImage($data['image'], 'posts');
         }
         $post = Post::create($data);

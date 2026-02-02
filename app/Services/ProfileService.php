@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\User;
 use App\Traits\Uploadable;
 use Exception;
-use Illuminate\Http\UploadedFile;
 
 class ProfileService
 {
@@ -28,7 +27,7 @@ class ProfileService
         ];
         try {
             foreach ($images as $key => &$image) {
-                if (isset($data[$key]) && $data[$key] instanceof UploadedFile) {
+                if (isset($data[$key])) {
                     $image['newPath'] = $this->uploadImage($data[$key], $image['directory']);
                     $data[$key] = $image['newPath'];
                 }
