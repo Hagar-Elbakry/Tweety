@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 class UpdateProfileRequest extends FormRequest
 {
@@ -31,8 +32,12 @@ class UpdateProfileRequest extends FormRequest
             ],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user)],
             'password' => ['sometimes', 'nullable', 'min:8', 'confirmed'],
-            'avatar' => ['sometimes', 'nullable', 'image', 'max:2048', 'mimes:jpeg,jpg,png'],
-            'banner' => ['sometimes', 'nullable', 'image', 'max:4096', 'mimes:jpeg,jpg,png'],
+            'avatar' => [
+                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024)
+            ],
+            'banner' => [
+                'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024)
+            ],
             'bio' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
