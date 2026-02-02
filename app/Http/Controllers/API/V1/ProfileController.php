@@ -42,6 +42,6 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user = $this->profileService->update($data, $user);
 
-        return ApiResponse::success(message: 'Profile updated successfully.', data: new MyProfileResource($user));
+        return ApiResponse::success(message: 'Profile updated successfully.', data: new ProfileResource($user));
     }
 }
