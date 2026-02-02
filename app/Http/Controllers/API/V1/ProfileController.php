@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use App\Services\ProfileService;
@@ -26,7 +26,7 @@ class ProfileController extends Controller
         );
     }
 
-    public function update(ProfileRequest $request, User $user): JsonResponse
+    public function update(UpdateProfileRequest $request, User $user): JsonResponse
     {
         $data = $request->validated();
         $user = $this->profileService->update($data, $user);
