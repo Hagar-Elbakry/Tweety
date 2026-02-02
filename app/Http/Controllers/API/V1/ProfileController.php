@@ -14,7 +14,8 @@ class ProfileController extends Controller
 {
     public function __construct(
         protected ProfileService $profileService
-    ) {}
+    ) {
+    }
 
     public function show(User $user): JsonResponse
     {
@@ -26,9 +27,10 @@ class ProfileController extends Controller
         );
     }
 
-    public function update(UpdateProfileRequest $request, User $user): JsonResponse
+    public function update(UpdateProfileRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $user = auth()->user();
         $user = $this->profileService->update($data, $user);
 
         return ApiResponse::success(message: 'Profile updated successfully.', data: new ProfileResource($user));

@@ -20,12 +20,14 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
-    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('resetPassword')->middleware('abilities:reset-password');
+    Route::post('/reset-password', [
+        PasswordResetController::class, 'resetPassword'
+    ])->name('resetPassword')->middleware('abilities:reset-password');
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
     Route::get('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
-    Route::patch('/profile/{user:username}', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

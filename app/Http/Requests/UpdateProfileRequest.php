@@ -14,7 +14,7 @@ class UpdateProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('user'));
+        return true;
     }
 
     /**
@@ -28,9 +28,9 @@ class UpdateProfileRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'username' => [
                 'required', 'regex:/^(?![!@#$%^&*])[A-Za-z0-9_]+$/',
-                Rule::unique('users', 'username')->ignore($this->user),
+                Rule::unique('users', 'username')->ignore($this->user()->id),
             ],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user)],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user()->id)],
             'password' => ['sometimes', 'nullable', 'min:8', 'confirmed'],
             'avatar' => [
                 'sometimes', 'nullable', 'image', File::types(['jpeg', 'jpg', 'png'])->min(1024)->max(12 * 1024),
