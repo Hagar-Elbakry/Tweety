@@ -3,23 +3,17 @@
 namespace App\Services;
 
 use App\Models\Post;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Traits\Uploadable;
+use Exception;
 
 class PostService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    use Uploadable;
 
     public function create(array $data): Post
     {
         if (isset($data['image'])) {
-            $data['image'] = $this->UploadImage($data['image']);
+            $data['image'] = $this->UploadImage($data['image'], 'posts');
         }
         $post = Post::create($data);
 
@@ -32,7 +26,7 @@ class PostService
         $oldImagePath = $post->image;
         try {
             if (isset($data['image'])) {
-                $newImagePath = $this->UploadImage($data['image']);
+                $newImagePath = $this->UploadImage($data['image'], 'posts');
                 $data['image'] = $newImagePath;
             }
             $post->update($data);
@@ -41,31 +35,11 @@ class PostService
             }
 
             return $post;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($newImagePath) {
                 $this->deleteImage($newImagePath);
             }
             throw $e;
         }
-    }
-
-    public function delete(Post $post): void
-    {
-        $imagePath = $post->image;
-        if ($post->delete()) {
-            if ($imagePath) {
-                $this->deleteImage($imagePath);
-            }
-        }
-    }
-
-    private function UploadImage(UploadedFile $image): string
-    {
-        return $image->store('posts', 'public');
-    }
-
-    private function deleteImage(string $path): void
-    {
-        Storage::disk('public')->delete($path);
     }
 }
