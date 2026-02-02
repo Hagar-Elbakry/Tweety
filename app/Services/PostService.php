@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\Post;
-use App\Traits\UploadAble;
+use App\Traits\Uploadable;
+use Exception;
 use Illuminate\Http\UploadedFile;
 
 class PostService
 {
-    use UploadAble;
+    use Uploadable;
 
     public function create(array $data): Post
     {
@@ -35,7 +36,7 @@ class PostService
             }
 
             return $post;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($newImagePath) {
                 $this->deleteImage($newImagePath);
             }

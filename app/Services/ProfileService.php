@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Traits\UploadAble;
+use App\Traits\Uploadable;
 use Exception;
 use Illuminate\Http\UploadedFile;
 
 class ProfileService
 {
-    use UploadAble;
+    use Uploadable;
 
     public function show(User $user): User
     {
