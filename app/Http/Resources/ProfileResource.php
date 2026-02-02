@@ -18,6 +18,10 @@ class ProfileResource extends JsonResource
         return [
             'name' => $this->name,
             'username' => $this->username,
+            $this->mergeWhen(auth()->id() === $this->id, [
+                'email' => $this->email,
+                'posts_count' => $this->posts()->count(),
+            ]),
             'avatar' => $this->avatar ? Storage::url($this->avatar) : null,
             'banner' => $this->banner ? Storage::url($this->banner) : null,
             'bio' => $this->bio ?? null,

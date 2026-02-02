@@ -14,12 +14,21 @@ class ProfileController extends Controller
 {
     public function __construct(
         protected ProfileService $profileService
-    ) {
-    }
+    ) {}
 
     public function show(User $user): JsonResponse
     {
-        $profile = $this->profileService->show($user);
+        $profile = $this->profileService->getProfile($user);
+
+        return ApiResponse::success(
+            message: 'Profile fetched successfully.',
+            data: new ProfileResource($profile),
+        );
+    }
+
+    public function me(): JsonResponse
+    {
+        $profile = $this->profileService->getProfile(auth()->user());
 
         return ApiResponse::success(
             message: 'Profile fetched successfully.',
@@ -33,6 +42,6 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user = $this->profileService->update($data, $user);
 
-        return ApiResponse::success(message: 'Profile updated successfully.', data: new ProfileResource($user));
+        return ApiResponse::success(message: 'Profile updated successfully.', data: new MyProfileResource($user));
     }
 }

@@ -10,9 +10,13 @@ class ProfileService
 {
     use Uploadable;
 
-    public function show(User $user): User
+    public function getProfile(User $user): User
     {
-        return $user->load('posts');
+        return $user->load([
+            'posts' => function ($query) {
+                $query->latest();
+            },
+        ]);
     }
 
     public function update(array $data, User $user): User
