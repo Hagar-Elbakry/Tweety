@@ -42,4 +42,14 @@ class PostService
             throw $e;
         }
     }
+
+    public function delete(Post $post): void
+    {
+        $imagePath = $post->image;
+        if ($post->delete()) {
+            if ($imagePath) {
+                $this->deleteImage($imagePath);
+            }
+        }
+    }
 }
