@@ -5,7 +5,7 @@ namespace App\Actions;
 use App\Models\Post;
 use Maize\Markable\Models\Bookmark;
 
-class BookmarkPostAction
+final class BookmarkPostAction
 {
     public function execute(Post $post, $user)
     {

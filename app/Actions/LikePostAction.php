@@ -5,7 +5,7 @@ namespace App\Actions;
 use App\Models\Post;
 use Maize\Markable\Models\Like;
 
-class LikePostAction
+final class LikePostAction
 {
     public function execute(Post $post, $user)
     {
