@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Actions\BookmarkPostAction;
+use App\Actions\LikePostAction;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\DeletePostRequest;
@@ -11,12 +13,15 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
+use Maize\Markable\Models\Bookmark;
+use Maize\Markable\Models\Like;
 
 class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {}
+    ) {
+    }
 
     public function store(StorePostRequest $request): JsonResponse
     {
@@ -40,5 +45,27 @@ class PostController extends Controller
         $this->postService->delete($post);
 
         return ApiResponse::success(message: 'Post deleted successfully');
+    }
+
+    public function like(Post $post, LikePostAction $action): JsonResponse
+    {
+        $user = auth()->user();
+        $action->execute($post, $user);
+        if (Like::has($post, $user)) {
+            return ApiResponse::success(message: 'Post liked successfully');
+        } else {
+            return ApiResponse::success(message: 'Post unliked successfully');
+        }
+    }
+
+    public function bookmark(Post $post, BookmarkPostAction $action): JsonResponse
+    {
+        $user = auth()->user();
+        $action->execute($post, $user);
+        if (Bookmark::has($post, $user)) {
+            return ApiResponse::success(message: 'Post bookmarked successfully');
+        } else {
+            return ApiResponse::success(message: 'Post unbookmarked successfully');
+        }
     }
 }

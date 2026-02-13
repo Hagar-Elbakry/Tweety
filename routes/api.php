@@ -19,6 +19,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
     Route::get('/profile/me', [ProfileController::class, 'me'])->name('profile.me');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
 });
 
 Route::prefix('v1')->group(function () {
