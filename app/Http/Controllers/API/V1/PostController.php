@@ -20,7 +20,8 @@ class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {}
+    ) {
+    }
 
     public function store(StorePostRequest $request): JsonResponse
     {
@@ -46,7 +47,7 @@ class PostController extends Controller
         return ApiResponse::success(message: 'Post deleted successfully');
     }
 
-    public function like(Post $post, LikePostAction $action)
+    public function like(Post $post, LikePostAction $action): JsonResponse
     {
         $user = auth()->user();
         $action->execute($post, $user);
@@ -57,7 +58,7 @@ class PostController extends Controller
         }
     }
 
-    public function bookmark(Post $post, BookmarkPostAction $action)
+    public function bookmark(Post $post, BookmarkPostAction $action): JsonResponse
     {
         $user = auth()->user();
         $action->execute($post, $user);
