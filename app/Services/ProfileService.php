@@ -15,7 +15,7 @@ class ProfileService
         return $user->load([
             'posts' => function ($query) {
                 $query->latest()->withCount('comments');
-            }
+            },
         ]);
     }
 

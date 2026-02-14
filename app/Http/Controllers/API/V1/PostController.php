@@ -24,8 +24,7 @@ class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {
-    }
+    ) {}
 
     public function store(StorePostRequest $request): JsonResponse
     {
@@ -84,6 +83,7 @@ class PostController extends Controller
     public function getComments(Post $post, GetCommentsAction $action)
     {
         $comments = $action->execute($post);
+
         return ApiResponse::success(data: CommentResource::collection($comments->comments));
     }
 }

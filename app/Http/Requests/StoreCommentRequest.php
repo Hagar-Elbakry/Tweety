@@ -36,7 +36,7 @@ class StoreCommentRequest extends FormRequest
                             $fail('The parent comment must belong to the same post.');
                         }
                     }
-                }
+                },
             ],
         ];
     }
