@@ -7,6 +7,7 @@ use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\CommentController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
@@ -21,6 +22,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store'])->name('posts.comment');
 });
 
 Route::prefix('v1')->group(function () {
