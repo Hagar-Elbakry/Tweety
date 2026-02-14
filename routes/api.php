@@ -22,6 +22,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
     Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
+    Route::get('/posts/{post}/comments', [PostController::class, 'getComments'])->name('posts.comments');
 });
 
 Route::prefix('v1')->group(function () {

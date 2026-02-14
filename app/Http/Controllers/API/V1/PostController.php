@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Actions\BookmarkPostAction;
+use App\Actions\GetCommentsAction;
 use App\Actions\LikePostAction;
 use App\Actions\StoreCommentAction;
 use App\Helpers\ApiResponse;
@@ -78,5 +79,11 @@ class PostController extends Controller
         $comment = $action->execute($post, $data);
 
         return ApiResponse::success(message: 'Comment created successfully', data: new CommentResource($comment));
+    }
+
+    public function getComments(Post $post, GetCommentsAction $action)
+    {
+        $comments = $action->execute($post);
+        return ApiResponse::success(data: CommentResource::collection($comments->comments));
     }
 }
