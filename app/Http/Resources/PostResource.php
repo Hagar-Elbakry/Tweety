@@ -23,6 +23,7 @@ class PostResource extends JsonResource
             'image' => $this->image ? Storage::url($this->image) : null,
             'likes_count' => Like::count($this->resource),
             'bookmark_count' => Bookmark::count($this->resource),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'user' => new UserResource($this->whenLoaded('user')),

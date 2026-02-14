@@ -16,6 +16,14 @@ class ProfileService
             'posts' => function ($query) {
                 $query->latest();
             },
+            'posts.comments' => function ($query) {
+                $query->whereNull('parent_id')->latest();
+            },
+            'posts.comments.replies' => function ($query) {
+                $query->latest();
+            },
+            'posts.comments.user',
+            'posts.comments.replies.user',
         ]);
     }
 

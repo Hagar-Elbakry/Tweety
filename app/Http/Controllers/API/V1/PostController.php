@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Actions\BookmarkPostAction;
 use App\Actions\LikePostAction;
+use App\Actions\StoreCommentAction;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\DeletePostRequest;
 use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
@@ -66,5 +69,14 @@ class PostController extends Controller
         } else {
             return ApiResponse::success(message: 'Post unbookmarked successfully');
         }
+    }
+
+    public function comment(StoreCommentRequest $request, Post $post, StoreCommentAction $action): JsonResponse
+    {
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+        $comment = $action->execute($post, $data);
+
+        return ApiResponse::success(message: 'Comment created successfully', data: new CommentResource($comment));
     }
 }
