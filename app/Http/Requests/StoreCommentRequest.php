@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Comment;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +26,18 @@ class StoreCommentRequest extends FormRequest
     {
         return [
             'body' => ['required', 'string', 'max:1000'],
-            'parent_id' => ['nullable', 'exists:comments,id'],
+            'parent_id' => [
+                'nullable',
+                'exists:comments,id',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if ($value) {
+                        $parentComment = Comment::find($value);
+                        if ($parentComment && $parentComment->post_id != $this->route('post')->id) {
+                            $fail('The parent comment must belong to the same post.');
+                        }
+                    }
+                }
+            ],
         ];
     }
 }

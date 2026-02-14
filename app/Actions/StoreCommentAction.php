@@ -9,9 +9,10 @@ final class StoreCommentAction
 {
     public function execute(Post $post, array $data): Comment
     {
+        $data['user_id'] = auth()->id();
         $data['parent_id'] = $data['parent_id'] ?? null;
         $comment = $post->comments()->create($data);
 
-        return $comment->load(['user', 'replies.user', 'post']);
+        return $comment->load(['user', 'replies.user']);
     }
 }

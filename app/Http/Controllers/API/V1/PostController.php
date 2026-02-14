@@ -23,7 +23,8 @@ class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {}
+    ) {
+    }
 
     public function store(StorePostRequest $request): JsonResponse
     {
@@ -74,7 +75,6 @@ class PostController extends Controller
     public function comment(StoreCommentRequest $request, Post $post, StoreCommentAction $action): JsonResponse
     {
         $data = $request->validated();
-        $data['user_id'] = auth()->id();
         $comment = $action->execute($post, $data);
 
         return ApiResponse::success(message: 'Comment created successfully', data: new CommentResource($comment));
