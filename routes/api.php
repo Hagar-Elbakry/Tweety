@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
+use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 
@@ -21,8 +22,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
-    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
-    Route::get('/posts/{post}/comments', [PostController::class, 'getComments'])->name('posts.comments');
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store'])->name('comments.store');
+    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
 });
 
 Route::prefix('v1')->group(function () {
