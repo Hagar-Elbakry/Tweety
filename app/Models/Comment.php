@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Policies\CommentPolicy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[usePolicy(CommentPolicy::class)]
 class Comment extends Model
 {
     protected $fillable = ['body', 'user_id', 'post_id', 'parent_id'];
