@@ -5,8 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use Maize\Markable\Models\Bookmark;
-use Maize\Markable\Models\Like;
 
 class PostResource extends JsonResource
 {
@@ -21,8 +19,8 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'body' => $this->body ?: null,
             'image' => $this->image ? Storage::url($this->image) : null,
-            'likes_count' => Like::count($this->resource),
-            'bookmark_count' => Bookmark::count($this->resource),
+            'likes_count' => $this->likes_count,
+            'bookmark_count' => $this->bookmarks_count,
             'comments_count' => $this->comments_count,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
