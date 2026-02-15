@@ -12,8 +12,13 @@ final class GetCommentsAction
             'comments' => function ($query) {
                 $query->whereNull('parent_id');
             },
+            'comments.user' => function ($query) {
+                $query->select('id', 'name', 'username', 'avatar');
+            },
             'comments.replies',
-            'comments.user',
+            'comments.replies.user' => function ($query) {
+                $query->select('id', 'name', 'username', 'avatar');
+            },
         ]);
     }
 }
