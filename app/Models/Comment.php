@@ -10,6 +10,8 @@ class Comment extends Model
 {
     protected $fillable = ['body', 'user_id', 'post_id', 'parent_id'];
 
+    protected $with = ['replies', 'user:id,name,username,avatar'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
