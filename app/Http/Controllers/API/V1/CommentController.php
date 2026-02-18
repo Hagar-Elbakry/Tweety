@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DeleteCommentRequest;
-use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\Comment\DeleteCommentRequest;
+use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
