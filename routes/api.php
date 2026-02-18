@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
+use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 
@@ -19,8 +20,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
     Route::get('/profile/me', [ProfileController::class, 'me'])->name('profile.me');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
-    Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
+    Route::post('/posts/{post}/likes', [PostController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{post}/bookmarks', [PostController::class, 'bookmark'])->name('posts.bookmark');
+    Route::apiResource('posts.comments', CommentController::class)
+        ->shallow()
+        ->only(['index', 'store', 'destroy']);
 });
 
 Route::prefix('v1')->group(function () {

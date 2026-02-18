@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Actions\BookmarkPostAction;
-use App\Actions\LikePostAction;
+use App\Actions\Post\BookmarkPostAction;
+use App\Actions\Post\LikePostAction;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\DeletePostRequest;
@@ -20,8 +20,7 @@ class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {
-    }
+    ) {}
 
     public function store(StorePostRequest $request): JsonResponse
     {

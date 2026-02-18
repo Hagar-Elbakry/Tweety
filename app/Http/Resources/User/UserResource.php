@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\User;
 
-use App\Http\Resources\User\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class PostResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,14 +17,14 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'body' => $this->body ?: null,
-            'image' => $this->image ? Storage::url($this->image) : null,
-            'likes_count' => $this->likes_count,
-            'bookmark_count' => $this->bookmarks_count,
-            'comments_count' => $this->comments_count,
+            'name' => $this->name,
+            'username' => $this->username,
+            'email' => $this->email,
+            'avatar' => $this->avatar ? Storage::url($this->avatar) : null,
+            'banner' => $this->banner ? Storage::url($this->banner) : null,
+            'bio' => $this->bio ?: null,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

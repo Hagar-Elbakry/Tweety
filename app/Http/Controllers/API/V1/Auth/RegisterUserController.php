@@ -5,8 +5,9 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\User\UserResource;
 use App\Services\AuthenticationService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class RegisterUserController extends Controller
@@ -29,7 +30,7 @@ class RegisterUserController extends Controller
                 ],
                 status: 201
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ApiResponse::error(message: 'Failed to register user, please try again later.', status: 500);
         }
     }
