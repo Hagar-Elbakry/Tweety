@@ -33,7 +33,7 @@ class CommentController extends Controller
         return ApiResponse::success(message: 'Comment created successfully', data: new CommentResource($comment));
     }
 
-    public function destroy(DeleteCommentRequest $request, Post $post, Comment $comment): JsonResponse
+    public function destroy(DeleteCommentRequest $request, Comment $comment): JsonResponse
     {
         $this->commentService->delete($comment);
 

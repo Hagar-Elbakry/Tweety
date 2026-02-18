@@ -20,11 +20,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
     Route::get('/profile/me', [ProfileController::class, 'me'])->name('profile.me');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
-    Route::post('/posts/{post}/bookmark', [PostController::class, 'bookmark'])->name('posts.bookmark');
-    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
-    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
-    Route::delete('/posts/{post}/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('/posts/{post}/likes', [PostController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{post}/bookmarks', [PostController::class, 'bookmark'])->name('posts.bookmark');
+    Route::apiResource('posts.comments', CommentController::class)
+        ->shallow()
+        ->only(['index', 'store', 'destroy']);
 });
 
 Route::prefix('v1')->group(function () {
