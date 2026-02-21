@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -50,6 +51,36 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function followers(): HasManyThrough
+    {
+        return $this->hasManyThrough(User::class, Follow::class, 'following_id', 'id', 'id', 'follower_id');
+    }
+
+    public function follow(User $user)
+    {
+        if (! $this->isFollowing($user)) {
+            Follow::create([
+                'follower_id' => auth()->id(),
+                'following_id' => $user->id,
+            ]);
+        }
+    }
+
+    public function isFollowing(User $user): bool
+    {
+        return $this->following()->where('users.id', $user->id)->exists();
+    }
+
+    public function following(): HasManyThrough
+    {
+        return $this->hasManyThrough(User::class, Follow::class, 'follower_id', 'id', 'id', 'following_id');
+    }
+
+    public function unfollow(User $user)
+    {
+        Follow::query()->where('follower_id', auth()->id())->where('following_id', $user->id)->delete();
     }
 
     /**
