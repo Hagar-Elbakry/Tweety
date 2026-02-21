@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Comment;
+namespace App\Http\Requests;
 
-use App\Rules\BelongsToPost;
+use App\Rules\NotSelfFollowing;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCommentRequest extends FormRequest
+class FollowUnfollowRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,11 +16,7 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['required', 'string', 'max:1000'],
-            'parent_id' => [
-                'nullable',
-                new BelongsToPost($this->route('post')->id),
-            ],
+            'user_id' => ['required', 'exists:users,id', new NotSelfFollowing],
         ];
     }
 }

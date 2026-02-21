@@ -58,16 +58,6 @@ class User extends Authenticatable
         return $this->hasManyThrough(User::class, Follow::class, 'following_id', 'id', 'id', 'follower_id');
     }
 
-    public function follow(User $user)
-    {
-        if (! $this->isFollowing($user)) {
-            Follow::create([
-                'follower_id' => auth()->id(),
-                'following_id' => $user->id,
-            ]);
-        }
-    }
-
     public function isFollowing(User $user): bool
     {
         return $this->following()->where('users.id', $user->id)->exists();
@@ -76,11 +66,6 @@ class User extends Authenticatable
     public function following(): HasManyThrough
     {
         return $this->hasManyThrough(User::class, Follow::class, 'follower_id', 'id', 'id', 'following_id');
-    }
-
-    public function unfollow(User $user)
-    {
-        Follow::query()->where('follower_id', auth()->id())->where('following_id', $user->id)->delete();
     }
 
     /**
