@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\NewFollowCreated;
 use App\Models\User;
+use App\Notifications\NewFollow;
 
 class CreateUserFollowNotification
 {
@@ -13,6 +14,6 @@ class CreateUserFollowNotification
     public function handle(NewFollowCreated $event): void
     {
         $user = User::query()->findOrFail($event->follow->following_id);
-        $user->notify(new NewFollowCreated($event->follow));
+        $user->notify(new NewFollow($event->follow));
     }
 }

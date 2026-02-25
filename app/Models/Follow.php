@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Notifications\NewFollow;
+use App\Events\NewFollowCreated;
 use Illuminate\Database\Eloquent\Model;
 
 class Follow extends Model
@@ -13,6 +13,6 @@ class Follow extends Model
     ];
 
     protected $dispatchesEvents = [
-        'created' => NewFollow::class,
+        'created' => NewFollowCreated::class,
     ];
 }
