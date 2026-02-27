@@ -6,7 +6,7 @@ use App\Rules\NotSelfFollowingRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FollowUnfollowRequest extends FormRequest
+class ToggleFollowRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
