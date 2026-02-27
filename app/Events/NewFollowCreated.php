@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Follow;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -17,7 +17,8 @@ class NewFollowCreated
      * Create a new event instance.
      */
     public function __construct(
-        public Follow $follow
+        public User $follower,
+        public User $following
     ) {}
 
     /**

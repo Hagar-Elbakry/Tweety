@@ -13,7 +13,7 @@ class CreateUserFollowNotification
      */
     public function handle(NewFollowCreated $event): void
     {
-        $user = User::query()->findOrFail($event->follow->following_id);
-        $user->notify(new NewFollow($event->follow));
+        $user = User::query()->findOrFail($event->following->id);
+        $user->notify(new NewFollow($event->follower));
     }
 }

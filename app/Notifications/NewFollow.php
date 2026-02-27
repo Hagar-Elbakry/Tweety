@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Follow;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -14,7 +14,7 @@ class NewFollow extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        protected Follow $follow
+        protected User $follower
     ) {}
 
     /**
@@ -35,7 +35,7 @@ class NewFollow extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'follower_id' => $this->follow->follower_id,
+            'follower_id' => $this->follower->id,
         ];
     }
 }

@@ -13,9 +13,9 @@ class CreateFollowActivity
     public function handle(NewFollowCreated $event): void
     {
         Activity::query()->create([
-            'user_id' => $event->follow->follower_id,
+            'user_id' => $event->follower->id,
             'type' => 'follow',
-            'target_id' => $event->follow->following_id,
+            'target_id' => $event->following->id,
         ]);
     }
 }
