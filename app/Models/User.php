@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -53,9 +53,9 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    public function followers(): HasManyThrough
+    public function followers(): BelongsToMany
     {
-        return $this->hasManyThrough(User::class, Follow::class, 'following_id', 'id', 'id', 'follower_id');
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
     }
 
     public function isFollowing(User $user): bool
@@ -63,9 +63,9 @@ class User extends Authenticatable
         return $this->following()->where('users.id', $user->id)->exists();
     }
 
-    public function following(): HasManyThrough
+    public function following(): BelongsToMany
     {
-        return $this->hasManyThrough(User::class, Follow::class, 'follower_id', 'id', 'id', 'following_id');
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
     }
 
     /**
