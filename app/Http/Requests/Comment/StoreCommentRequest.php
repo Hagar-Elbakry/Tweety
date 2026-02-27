@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Comment;
 
-use App\Rules\BelongsToPost;
+use App\Rules\BelongsToPostRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,7 +19,7 @@ class StoreCommentRequest extends FormRequest
             'body' => ['required', 'string', 'max:1000'],
             'parent_id' => [
                 'nullable',
-                new BelongsToPost($this->route('post')->id),
+                new BelongsToPostRule($this->route('post')->id),
             ],
         ];
     }

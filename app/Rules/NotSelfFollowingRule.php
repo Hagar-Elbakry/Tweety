@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
-class NotSelfFollowing implements ValidationRule
+class NotSelfFollowingRule implements ValidationRule
 {
     /**
      * Run the validation rule.

@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
-class BelongsToPost implements ValidationRule
+class BelongsToPostRule implements ValidationRule
 {
     public function __construct(
         protected $postId

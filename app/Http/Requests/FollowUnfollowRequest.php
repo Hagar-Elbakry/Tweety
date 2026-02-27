@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\NotSelfFollowing;
+use App\Rules\NotSelfFollowingRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -16,7 +16,7 @@ class FollowUnfollowRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id', new NotSelfFollowing],
+            'user_id' => ['required', 'exists:users,id', new NotSelfFollowingRule],
         ];
     }
 }
