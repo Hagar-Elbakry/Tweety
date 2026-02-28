@@ -14,19 +14,11 @@ class FollowController extends Controller
         protected FollowService $followService
     ) {}
 
-    public function follow(ToggleFollowRequest $request): JsonResponse
+    public function __invoke(ToggleFollowRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $this->followService->follow($data);
+        $result = $this->followService->toggleFollow($data);
 
-        return ApiResponse::success(message: 'Successfully followed the user.');
-    }
-
-    public function unfollow(ToggleFollowRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $this->followService->unfollow($data);
-
-        return ApiResponse::success(message: 'Successfully unfollowed the user.');
+        return ApiResponse::success(message: $result['message']);
     }
 }

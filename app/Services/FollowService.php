@@ -7,18 +7,16 @@ use App\Models\User;
 
 class FollowService
 {
-    public function follow(array $data): void
+    public function toggleFollow(array $data): array
     {
         $userToFollow = User::query()->findOrFail($data['user_id']);
-        $changes = auth()->user()->following()->syncWithoutDetaching($userToFollow->id);
+        $changes = auth()->user()->following()->toggle($userToFollow->id);
         if (! empty($changes['attached'])) {
             event(new NewFollowCreated(auth()->user(), $userToFollow));
-        }
-    }
 
-    public function unfollow(array $data): void
-    {
-        $userToUnfollow = User::query()->findOrFail($data['user_id']);
-        auth()->user()->following()->detach($userToUnfollow->id);
+            return ['message' => 'Successfully followed the user. '];
+        }
+
+        return ['message' => 'Successfully unfollowed the user. '];
     }
 }
