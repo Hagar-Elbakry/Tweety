@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Helpers\ApiResponse;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -35,5 +36,8 @@ class AppServiceProvider extends ServiceProvider
                     );
                 });
         });
+        Relation::morphMap([
+            'Follow' => 'App\Notifications\NewFollow',
+        ]);
     }
 }

@@ -27,6 +27,11 @@ class NewFollow extends Notification
         return ['database'];
     }
 
+    public function databaseType(): string
+    {
+        return 'Follow';
+    }
+
     /**
      * Get the array representation of the notification.
      *
