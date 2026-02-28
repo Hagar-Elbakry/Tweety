@@ -12,15 +12,18 @@ class NotificationsController extends Controller
 {
     public function __invoke(): JsonResponse
     {
+        $unreadNotifications = auth()->user()->unreadNotifications;
+        $followerIds = $unreadNotifications->where('type',
+            'App\Notifications\NewFollow')->pluck('data.follower_id')->toArray();
+        $followers = User::query()->whereIn('id', $followerIds)->get()->keyBy('id');
         $notifications = [];
-        foreach (auth()->user()->unreadNotifications as $notification) {
+        foreach ($unreadNotifications as $notification) {
             $notification->markAsRead();
-
-            if ($notification['type'] == "App\Notifications\NewFollow") {
+            if ($notification->type === 'App\Notifications\NewFollow') {
                 $notifications[] = [
                     'type' => 'follow',
-                    'user' => User::query()->findOrFail($notification['data']['follower_id']),
-                    'created_at' => $notification['created_at'],
+                    'user' => $followers[$notification->data['follower_id']],
+                    'created_at' => $notification->created_at,
                 ];
             }
         }
