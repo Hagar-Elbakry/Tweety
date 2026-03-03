@@ -6,6 +6,8 @@ use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 use App\Http\Controllers\API\V1\CommentController;
+use App\Http\Controllers\API\V1\FollowController;
+use App\Http\Controllers\API\V1\NotificationsController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 
@@ -25,6 +27,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts.comments', CommentController::class)
         ->shallow()
         ->only(['index', 'store', 'destroy']);
+    Route::post('/follow', FollowController::class);
+    Route::get('/notifications', NotificationsController::class)->name('notifications');
 });
 
 Route::prefix('v1')->group(function () {
