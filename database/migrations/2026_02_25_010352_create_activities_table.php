@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ActivityType;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->enum('type', ActivityType::cases());
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class, 'target_id')->constrained()->onDelete('cascade');
             $table->timestamps();
