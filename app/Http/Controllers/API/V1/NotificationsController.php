@@ -14,7 +14,9 @@ class NotificationsController extends Controller
     {
         $unreadNotifications = auth()->user()->unreadNotifications;
         $followerIds = $unreadNotifications->where('type', 'Follow')->pluck('data.follower_id')->toArray();
-        $followers = User::query()->whereIn('id', $followerIds)->get()->keyBy('id');
+        $followers = User::query()->whereIn('id', $followerIds)
+            ->get()
+            ->keyBy('id');
         $notifications = [];
         foreach ($unreadNotifications as $notification) {
             $notification->markAsRead();

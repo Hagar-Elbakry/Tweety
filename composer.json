@@ -13,6 +13,7 @@
         "dedoc/scramble": "^0.13.10",
         "ichtrojan/laravel-otp": "^2.0",
         "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.8",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
