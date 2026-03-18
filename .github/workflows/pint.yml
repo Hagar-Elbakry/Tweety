@@ -21,7 +21,7 @@ jobs:
         run: git fetch origin main
       
       - name: Launch Pint inspection
-        run: vendor/bin/pint --diff=main
+        run: vendor/bin/pint --diff=origin/main
  
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7.1.0
