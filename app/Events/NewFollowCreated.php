@@ -19,7 +19,6 @@ class NewFollowCreated
         public User $following
     ) {
 
-
     }
 
 }
