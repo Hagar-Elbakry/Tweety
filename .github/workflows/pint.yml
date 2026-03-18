@@ -2,6 +2,7 @@ name: PHP Linting (Pint)
 on:
   workflow_dispatch:
   push:
+  pull_request: 
 jobs:
   Pint:
     runs-on: ubuntu-latest
