@@ -17,6 +17,9 @@ class NewFollowCreated
     public function __construct(
         public User $follower,
         public User $following
-    ) {}
+    ) {
+
+
+    }
 
 }
