@@ -2,10 +2,9 @@
 
 use App\Events\UserRegistered;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 
-uses(RefreshDatabase::class);
+
 beforeEach(function () {
     $this->validData = [
         'name' => 'Test User',

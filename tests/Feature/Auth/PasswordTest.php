@@ -2,11 +2,10 @@
 
 use App\Mail\ResetPassword;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
-uses(RefreshDatabase::class);
+
 beforeEach(function () {
     $user = User::factory()->create();
     $this->validData = [
@@ -53,14 +52,7 @@ it('fails to verify wrong otp', function () {
     $response->assertStatus(401);
 });
 it('fails to verify expired otp', function () {
-    DB::table('otps')->insert([
-        'identifier' => $this->validData['email'],
-        'token' => '123456',
-        'validity' => 15,
-        'valid' => 1,
-        'created_at' => now()->subMinutes(30),
-        'updated_at' => now()->subMinutes(30),
-    ]);
+    insertOtp($this->validData['email'], true);
     $response = $this->postJson('/api/v1/verify-otp', [
         'email' => $this->validData['email'],
         'otp' => '123456'

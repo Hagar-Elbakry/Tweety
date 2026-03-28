@@ -18,7 +18,8 @@ class AuthenticationService
 {
     public function __construct(
         protected Otp $otp
-    ) {}
+    ) {
+    }
 
     public function register(array $data): array
     {
@@ -33,15 +34,40 @@ class AuthenticationService
         });
     }
 
+    private function getToken(User $user): string
+    {
+        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
+    }
+
+    private function generateOtp(string $email): string
+    {
+        return $this->otp->generate($email, 'numeric', 6, 15)->token;
+    }
+
     public function login(array $data): ?array
     {
         $user = $this->authenticate($data['email'], $data['password']);
-        if (! $user) {
+        if (!$user) {
             return null;
         }
         $token = $this->getToken($user);
 
         return compact('user', 'token');
+    }
+
+    private function authenticate(string $email, string $password): ?User
+    {
+        $user = $this->getUser($email);
+        if (!$user || !Hash::check($password, $user->password)) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    private function getUser(string $email): ?User
+    {
+        return User::where('email', $email)->first();
     }
 
     public function logout(Request $request): void
@@ -62,7 +88,7 @@ class AuthenticationService
 
         return DB::transaction(function () use ($googleUser) {
             $user = User::where('email', $googleUser->getEmail())->first();
-            if (! $user) {
+            if (!$user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
@@ -80,13 +106,29 @@ class AuthenticationService
         });
     }
 
+    private function generateUniqueUsername(string $name): string
+    {
+        $username = Str::slug($name, '');
+        $latestUsername = User::whereRaw('username REGEXP ?', ['^'.$username.'[0-9]*$'])
+            ->orderByRaw('LENGTH(username) DESC')
+            ->orderByDesc('username')
+            ->first();
+        if ($latestUsername) {
+            $number = str_replace($username, '', $latestUsername->username);
+
+            return $username.(is_numeric($number) ? (int) $number + 1 : 1);
+        }
+
+        return $username;
+    }
+
     public function verifyEmail(array $data): ?User
     {
         $user = auth()->user();
 
         return DB::transaction(function () use ($data, $user) {
             $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if (! $validatedOtp->status) {
+            if (!$validatedOtp->status) {
                 return null;
             }
             $user->update([
@@ -120,11 +162,12 @@ class AuthenticationService
     {
         return DB::transaction(function () use ($data) {
             $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-            if (! $validatedOtp->status) {
+            if (!$validatedOtp->status) {
                 return null;
             }
             $user = $this->getUser($data['email']);
-            $token = $user->createToken('password_reset.'.$user->username, ['reset-password'], now()->addMinutes(15))->plainTextToken;
+            $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
+                now()->addMinutes(15))->plainTextToken;
 
             return $token;
         });
@@ -137,46 +180,5 @@ class AuthenticationService
             'password' => $data['password'],
         ]);
         $user->tokens()->delete();
-    }
-
-    private function getToken(User $user): string
-    {
-        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
-    }
-
-    private function getUser(string $email): ?User
-    {
-        return User::where('email', $email)->first();
-    }
-
-    private function authenticate(string $email, string $password): ?User
-    {
-        $user = $this->getUser($email);
-        if (! $user || ! Hash::check($password, $user->password)) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    private function generateOtp(string $email): string
-    {
-        return $this->otp->generate($email, 'numeric', 6, 15)->token;
-    }
-
-    private function generateUniqueUsername(string $name): string
-    {
-        $username = Str::slug($name, '');
-        $latestUsername = User::whereRaw('username REGEXP ?', ['^'.$username.'[0-9]*$'])
-            ->orderByRaw('LENGTH(username) DESC')
-            ->orderByDesc('username')
-            ->first();
-        if ($latestUsername) {
-            $number = str_replace($username, '', $latestUsername->username);
-
-            return $username.(is_numeric($number) ? (int) $number + 1 : 1);
-        }
-
-        return $username;
     }
 }

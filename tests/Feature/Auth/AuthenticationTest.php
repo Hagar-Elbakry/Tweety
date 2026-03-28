@@ -1,9 +1,8 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+
 beforeEach(function () {
     $user = User::factory()->create([
         'email' => 'test@gmail.com',
