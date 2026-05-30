@@ -9,16 +9,14 @@ beforeEach(function () {
     $this->validData = [
         'name' => 'Test User',
         'username' => 'testuser',
+        'email' => 'test@gmail.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ];
 });
 it('allow user to register successfully', function () {
     Event::fake();
-    $response = $this->postJson(
-        route('register'),
-        array_merge($this->validData, ['email' => fake()->unique()->safeEmail()])
-    );
+    $response = $this->postJson(route('register'), $this->validData);
     Event::assertDispatched(UserRegistered::class);
     $response->assertStatus(201);
     $response->assertJsonStructure([
@@ -65,7 +63,7 @@ it('fails registration with invalid data', function (array $invalidField) {
     Event::fake();
     $response = $this->postJson(
         route('register'),
-        array_merge($this->validData, ['email' => fake()->unique()->safeEmail()], $invalidField)
+        array_merge($this->validData, $invalidField)
     );
     Event::assertNotDispatched(UserRegistered::class);
     $response->assertStatus(422);
