@@ -14,13 +14,14 @@ class AuthenticatedUserController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {}
+    ) {
+    }
 
     public function login(LoginUserRequest $request): JsonResponse
     {
         $data = $request->validated();
         $result = $this->userService->login($data);
-        if (! $result) {
+        if (!$result) {
             return ApiResponse::error(message: 'The provided credentials do not match our records.', status: 401);
         }
 
@@ -35,7 +36,8 @@ class AuthenticatedUserController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $this->userService->logout($request);
+        $user = $request->user();
+        $this->userService->logout($user);
 
         return ApiResponse::success(message: 'User logged out successfully');
     }

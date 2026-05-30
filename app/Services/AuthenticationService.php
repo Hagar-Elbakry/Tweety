@@ -7,7 +7,6 @@ use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -70,9 +69,9 @@ class AuthenticationService
         return User::where('email', $email)->first();
     }
 
-    public function logout(Request $request): void
+    public function logout(User $user): void
     {
-        $request->user()->currentAccessToken()->delete();
+        $user->currentAccessToken()->delete();
     }
 
     public function redirectToGoogle(): string
