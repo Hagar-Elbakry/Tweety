@@ -7,13 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,8 +18,8 @@ class RegisterUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'username' => [
-                'required', 'required', 'regex:/^(?![!@#$%^&*])[A-Za-z0-9_]+$/',
-                'bail', 'unique:users,username',
+                'bail', 'required', 'regex:/^(?![!@#$%^&*])[A-Za-z0-9_]+$/',
+                'unique:users,username',
             ],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8', 'confirmed'],
