@@ -45,9 +45,16 @@ class AuthenticatedUserController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $this->userService->logout($user);
+        try {
+            $user = $request->user();
+            $this->userService->logout($user);
 
-        return ApiResponse::success(message: 'User logged out successfully');
+            return ApiResponse::success(message: 'User logged out successfully');
+        } catch (Exception $e) {
+            Log::error('Error logging out user: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+            return ApiResponse::error(message: 'Failed to logout user, please try again later.', status: 500);
+        }
     }
 }
