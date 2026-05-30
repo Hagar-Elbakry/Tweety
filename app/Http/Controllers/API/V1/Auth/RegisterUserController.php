@@ -9,12 +9,14 @@ use App\Http\Resources\User\UserResource;
 use App\Services\AuthenticationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class RegisterUserController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {}
+    ) {
+    }
 
     public function __invoke(RegisterUserRequest $request): JsonResponse
     {
@@ -31,6 +33,9 @@ class RegisterUserController extends Controller
                 status: 201
             );
         } catch (Exception $e) {
+            Log::error('Error registering user: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
             return ApiResponse::error(message: 'Failed to register user, please try again later.', status: 500);
         }
     }
