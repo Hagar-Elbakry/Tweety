@@ -7,6 +7,7 @@ use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -23,7 +24,7 @@ class AuthenticationService
     public function register(array $data): array
     {
         return DB::transaction(function () use ($data) {
-            $user = User::create($data);
+            $user = User::create(Arr::only($data, ['name', 'username', 'email', 'password']));
             $token = $this->getToken($user);
             $otpCode = $this->generateOtp($user->email);
 
