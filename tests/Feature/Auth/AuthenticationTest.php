@@ -48,5 +48,11 @@ it('allow user to logout', function () {
     $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson('/api/v1/logout')
         ->assertStatus(200);
+
+    auth()->forgetGuards();
+
+    $response2 = $this->withHeader('Authorization', 'Bearer '.$token)
+        ->postJson('/api/v1/logout');
+    $response2->assertStatus(401);
 });
 
