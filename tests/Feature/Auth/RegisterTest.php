@@ -45,11 +45,13 @@ it('allow user to register successfully', function () {
 });
 
 it('fails registration if email is already taken', function () {
+    Event::fake();
     $user = User::factory()->create();
     $response = $this->postJson(
         'api/v1/register',
         array_merge($this->validData, ['email' => $user->email])
     );
+    Event::assertNotDispatched(UserRegistered::class);
     $response->assertStatus(422);
     $response->assertJson([
         'success' => false,
@@ -60,10 +62,12 @@ it('fails registration if email is already taken', function () {
 });
 
 it('fails registration with invalid data', function (array $invalidField) {
+    Event::fake();
     $response = $this->postJson(
         '/api/v1/register',
         array_merge($this->validData, ['email' => fake()->unique()->safeEmail()], $invalidField)
     );
+    Event::assertNotDispatched(UserRegistered::class);
     $response->assertStatus(422);
 })->with([
     'invalid username' => [['username' => '@testuser']],
