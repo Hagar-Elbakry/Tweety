@@ -4,10 +4,10 @@ namespace App\Listeners;
 
 use App\Events\UserRegistered;
 use App\Mail\VerifyEmail;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Support\Facades\Mail;
 
-class SendVerificationOtp implements ShouldQueue
+class SendVerificationOtp implements ShouldQueueAfterCommit
 {
     /**
      * Handle the event.
