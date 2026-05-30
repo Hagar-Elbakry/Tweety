@@ -15,13 +15,13 @@ beforeEach(function () {
 
 it('forgets a user\'s password', function () {
     Mail::fake();
-    $response = $this->postJson('/api/v1/forget-password', $this->validData);
+    $response = $this->postJson(route('sendOtp'), $this->validData);
     $response->assertStatus(200);
     Mail::assertQueued(ResetPassword::class);
 });
 
 it('fails to forget password if email is doesnt\'s exist', function () {
-    $response = $this->postJson('/api/v1/forget-password', ['email' => 'notExit@gmail.com']);
+    $response = $this->postJson(route('sendOtp'), ['email' => 'notExit@gmail.com']);
     $response->assertStatus(422);
     $response->assertJson([
         'success' => false,
@@ -33,9 +33,9 @@ it('fails to forget password if email is doesnt\'s exist', function () {
 
 it('verifies otp', function () {
     Mail::fake();
-    $this->postJson('/api/v1/forget-password', $this->validData);
+    $this->postJson(route('sendOtp'), $this->validData);
     $otp = DB::table('otps')->where('identifier', $this->validData['email'])->value('token');
-    $response = $this->postJson('/api/v1/verify-otp',
+    $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
             'otp' => $otp
@@ -44,8 +44,8 @@ it('verifies otp', function () {
 });
 
 it('fails to verify wrong otp', function () {
-    $this->postJson('/api/v1/forget-password', $this->validData);
-    $response = $this->postJson('/api/v1/verify-otp', [
+    $this->postJson(route('sendOtp'), $this->validData);
+    $response = $this->postJson(route('verifyOtp'), [
         'email' => $this->validData['email'],
         'otp' => '000000'
     ]);
@@ -53,7 +53,7 @@ it('fails to verify wrong otp', function () {
 });
 it('fails to verify expired otp', function () {
     insertOtp($this->validData['email'], true);
-    $response = $this->postJson('/api/v1/verify-otp', [
+    $response = $this->postJson(route('verifyOtp'), [
         'email' => $this->validData['email'],
         'otp' => '123456'
     ]);
@@ -61,9 +61,9 @@ it('fails to verify expired otp', function () {
 });
 
 it('allow user to reset password', function () {
-    $this->postJson('/api/v1/forget-password', $this->validData);
+    $this->postJson(route('sendOtp'), $this->validData);
     $otp = DB::table('otps')->where('identifier', $this->validData['email'])->value('token');
-    $response = $this->postJson('/api/v1/verify-otp',
+    $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
             'otp' => $otp
@@ -71,7 +71,7 @@ it('allow user to reset password', function () {
 
     $token = $response->json('data.token');
     $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/reset-password', [
+        ->postJson(route('resetPassword'), [
             'password' => 'password',
             'password_confirmation' => 'password'
         ])
@@ -79,16 +79,16 @@ it('allow user to reset password', function () {
 });
 
 it('fails to reset password if password doesnt match', function () {
-    $this->postJson('/api/v1/forget-password', $this->validData);
+    $this->postJson(route('sendOtp'), $this->validData);
     $otp = DB::table('otps')->where('identifier', $this->validData['email'])->value('token');
-    $response = $this->postJson('/api/v1/verify-otp',
+    $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
             'otp' => $otp
         ]);
     $token = $response->json('data.token');
     $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/reset-password', [
+        ->postJson(route('resetPassword'), [
             'password' => 'password',
             'password_confirmation' => 'wrongpassword'
         ])

@@ -20,7 +20,7 @@ dataset('invalidData', [
 ]);
 
 it('allow user to login', function () {
-    $response = $this->postJson('/api/v1/login', $this->validData);
+    $response = $this->postJson(route('login'), $this->validData);
     $response->assertStatus(200);
     $response->assertJsonStructure([
         'success',
@@ -33,7 +33,7 @@ it('allow user to login', function () {
 });
 
 it('fails login with invalid data', function (array $invalidField) {
-    $response = $this->postJson('/api/v1/login', array_merge($this->validData, $invalidField));
+    $response = $this->postJson(route('login'), array_merge($this->validData, $invalidField));
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
@@ -42,17 +42,17 @@ it('fails login with invalid data', function (array $invalidField) {
 })->with('invalidData');
 
 it('allow user to logout', function () {
-    $response = $this->postJson('/api/v1/login', $this->validData);
+    $response = $this->postJson(route('login'), $this->validData);
     $token = $response->json('data.token');
 
     $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/logout')
+        ->postJson(route('logout'))
         ->assertStatus(200);
 
     auth()->forgetGuards();
 
     $response2 = $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/logout');
+        ->postJson(route('logout'));
     $response2->assertStatus(401);
 });
 

@@ -11,7 +11,7 @@ beforeEach(function () {
 
 it('user can verify email', function () {
     insertOtp($this->user->email);
-    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/email/verify', ['otp' => '123456']);
+    $response = $this->actingAs($this->user, 'sanctum')->postJson(route('verify'), ['otp' => '123456']);
     $response->assertStatus(200);
     $this->assertNotNull($this->user->fresh()->email_verified_at);
     $this->assertDatabaseHas('otps', ['valid' => 0]);
@@ -22,7 +22,7 @@ it('user can verify email', function () {
 });
 
 it('fails to verify email with wrong otp', function () {
-    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/email/verify', ['otp' => '000000']);
+    $response = $this->actingAs($this->user, 'sanctum')->postJson(route('verify'), ['otp' => '000000']);
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
@@ -32,7 +32,7 @@ it('fails to verify email with wrong otp', function () {
 
 it('fails to verify email with expired otp', function () {
     insertOtp($this->user->email, true);
-    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/email/verify', ['otp' => '123456']);
+    $response = $this->actingAs($this->user, 'sanctum')->postJson(route('verify'), ['otp' => '123456']);
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
@@ -41,7 +41,7 @@ it('fails to verify email with expired otp', function () {
 });
 
 it('resend email verification otp', function () {
-    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/email/verify/resend');
+    $response = $this->actingAs($this->user, 'sanctum')->postJson(route('resend'));
     $response->assertStatus(200);
     $this->assertDatabaseHas('otps', ['identifier' => $this->user->email]);
     $response->assertJson([
@@ -52,7 +52,7 @@ it('resend email verification otp', function () {
 
 it('fails to resend email verification otp with verified email', function () {
     $this->user->markEmailAsVerified();
-    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/email/verify/resend');
+    $response = $this->actingAs($this->user, 'sanctum')->postJson(route('resend'));
     $response->assertStatus(409);
     $response->assertJson([
         'success' => false,
