@@ -38,7 +38,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
-    Route::post('/forget-password', [PasswordResetController::class, 'sendOtp'])->name('sendOtp');
+    Route::post('/forget-password',
+        [PasswordResetController::class, 'sendOtp'])->name('sendOtp')->middleware('throttle:forgot-password');
     Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('verifyOtp');
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
 });
