@@ -160,22 +160,18 @@ class AuthenticationService
 
     public function verifyOtp(array $data): ?string
     {
-        return DB::transaction(function () use ($data) {
-            $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-            if (!$validatedOtp->status) {
-                return null;
-            }
-            $user = $this->getUser($data['email']);
-            $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
-                now()->addMinutes(15))->plainTextToken;
-
-            return $token;
-        });
+        $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
+        if (!$validatedOtp->status) {
+            return null;
+        }
+        $user = $this->getUser($data['email']);
+        $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
+            now()->addMinutes(15))->plainTextToken;
+        return $token;
     }
 
-    public function resetPassword(array $data): void
+    public function resetPassword(array $data, User $user): void
     {
-        $user = auth()->user();
         $user->update([
             'password' => $data['password'],
         ]);
