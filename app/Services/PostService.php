@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Traits\Uploadable;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
@@ -49,7 +50,13 @@ class PostService
         $imagePath = $post->image;
         if ($post->delete()) {
             if ($imagePath) {
-                $this->deleteImage($imagePath);
+                try {
+                    $this->deleteImage($imagePath);
+                } catch (Exception $e) {
+                    Log::error('Failed to delete image: '.$e->getMessage(), [
+                        'stack' => $e->getTraceAsString(),
+                    ]);
+                }
             }
         }
     }
