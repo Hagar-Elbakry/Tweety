@@ -122,10 +122,8 @@ class AuthenticationService
         return $username;
     }
 
-    public function verifyEmail(array $data): ?User
+    public function verifyEmail(array $data, User $user): ?User
     {
-        $user = auth()->user();
-
         return DB::transaction(function () use ($data, $user) {
             $validatedOtp = $this->otp->validate($user->email, $data['otp']);
             if (!$validatedOtp->status) {
@@ -139,9 +137,8 @@ class AuthenticationService
         });
     }
 
-    public function resendEmailVerificationOtp(): ?User
+    public function resendEmailVerificationOtp(User $user): ?User
     {
-        $user = auth()->user();
         if ($user->hasVerifiedEmail()) {
             return null;
         }
