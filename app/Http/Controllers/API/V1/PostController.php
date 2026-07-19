@@ -14,6 +14,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maize\Markable\Models\Bookmark;
 use Maize\Markable\Models\Like;
@@ -29,8 +30,8 @@ class PostController extends Controller
     {
         try {
             $data = $request->validated();
-            $data['user_id'] = $request->user()->id;
-            $post = $this->postService->create($data);
+            $user = $request->user();
+            $post = $this->postService->create($data, $user);
 
             return ApiResponse::success(message: 'Post created successfully', data: new PostResource($post),
                 status: 201);
@@ -47,7 +48,6 @@ class PostController extends Controller
         try {
             $data = $request->validated();
             $post = $this->postService->update($data, $post);
-
             return ApiResponse::success(message: 'Post updated successfully', data: new PostResource($post));
         } catch (Exception $e) {
             Log::error('Error updating post: '.$e->getMessage(), [
@@ -71,10 +71,10 @@ class PostController extends Controller
         }
     }
 
-    public function like(Post $post, LikePostAction $action): JsonResponse
+    public function like(Request $request, Post $post, LikePostAction $action): JsonResponse
     {
         try {
-            $user = auth()->user();
+            $user = $request->user();
             $action->execute($post, $user);
             if (Like::has($post, $user)) {
                 return ApiResponse::success(message: 'Post liked successfully');
@@ -89,10 +89,10 @@ class PostController extends Controller
         }
     }
 
-    public function bookmark(Post $post, BookmarkPostAction $action): JsonResponse
+    public function bookmark(Request $request, Post $post, BookmarkPostAction $action): JsonResponse
     {
         try {
-            $user = auth()->user();
+            $user = $request->user();
             $action->execute($post, $user);
             if (Bookmark::has($post, $user)) {
                 return ApiResponse::success(message: 'Post bookmarked successfully');
