@@ -13,7 +13,6 @@ class WelcomeUserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $afterCommit = true;
 
     /**
      * Create a new message instance.
@@ -21,6 +20,7 @@ class WelcomeUserMail extends Mailable
     public function __construct(
         public User $user
     ) {
+        $this->afterCommit();
     }
 
     /**
