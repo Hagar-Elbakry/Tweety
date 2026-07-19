@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\UserRegistered;
 use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
+use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Arr;
@@ -93,12 +94,19 @@ class AuthenticationService
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
                     'email' => $googleUser->getEmail(),
-                    'password' => Str::random(8),
+                    'password' => Str::random(32),
                     'provider' => 'google',
                     'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
                 ]);
-                UserRegistered::dispatch($user, null);
+                Mail::to($user)->queue(new WelcomeUserMail($user));
+            } else {
+                if (!$user->provider) {
+                    $user->update([
+                        'provider' => 'google',
+                        'provider_id' => $googleUser->getId(),
+                    ]);
+                }
             }
             $token = $this->getToken($user);
 
