@@ -13,12 +13,15 @@ class WelcomeUserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $afterCommit = true;
+
     /**
      * Create a new message instance.
      */
     public function __construct(
         public User $user
-    ) {}
+    ) {
+    }
 
     /**
      * Get the message envelope.
