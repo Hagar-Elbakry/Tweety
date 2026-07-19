@@ -16,7 +16,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         PasswordResetController::class, 'resetPassword',
     ])->name('resetPassword')->middleware('abilities:reset-password');
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
-    Route::post('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
+    Route::post('email/verify/resend',
+        [EmailVerificationController::class, 'resend'])->name('resend')->middleware('throttle:resend-verification');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
