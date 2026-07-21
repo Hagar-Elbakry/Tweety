@@ -19,7 +19,8 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function __construct(
         protected User $follower,
         protected User $following
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -50,7 +51,7 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
         ];
     }
 
-    public function toBroadcast($notifiable): BroadcastMessage
+    public function toBroadcast(object $notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
             'follower_id' => $this->follower->id,
@@ -60,7 +61,7 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
         ]);
     }
 
-    public function broadcastOn()
+    public function broadcastOn(): PrivateChannel
     {
         return new PrivateChannel('follow-notifications.'.$this->following->id);
     }
