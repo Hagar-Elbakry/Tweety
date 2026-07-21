@@ -19,7 +19,7 @@ class ProfileService
             'posts' => function ($query) {
                 $query->latest()->withCount(['comments', 'likes', 'bookmarks']);
             },
-        ]);
+        ])->loadCount('posts');
     }
 
     public function update(array $data, User $user): User
