@@ -28,7 +28,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts.comments', CommentController::class)
         ->shallow()
         ->only(['index', 'store', 'destroy']);
-    Route::post('/follow', FollowController::class);
+    Route::post('/follow', FollowController::class)->name('follow');
     Route::get('/notifications', NotificationsController::class)->name('notifications');
 });
 
