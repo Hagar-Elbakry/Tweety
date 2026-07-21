@@ -18,7 +18,7 @@ class FollowController extends Controller
     public function __invoke(ToggleFollowRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $result = $this->followService->toggleFollow($data, $request->user);
+        $result = $this->followService->toggleFollow($data, $request->user());
 
         return ApiResponse::success(message: $result['message']);
     }
