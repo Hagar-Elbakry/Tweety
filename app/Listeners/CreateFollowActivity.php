@@ -5,8 +5,9 @@ namespace App\Listeners;
 use App\Enums\ActivityType;
 use App\Events\NewFollowCreated;
 use App\Models\Activity;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CreateFollowActivity
+class CreateFollowActivity implements ShouldQueue
 {
     /**
      * Handle the event.

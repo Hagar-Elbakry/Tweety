@@ -4,8 +4,9 @@ namespace App\Listeners;
 
 use App\Events\NewFollowCreated;
 use App\Notifications\NewFollowNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CreateUserFollowNotification
+class CreateUserFollowNotification implements ShouldQueue
 {
     /**
      * Handle the event.
