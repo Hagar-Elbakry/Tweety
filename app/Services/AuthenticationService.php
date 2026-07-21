@@ -28,7 +28,7 @@ class AuthenticationService
         return DB::transaction(function () use ($data) {
             $user = User::create(Arr::only($data, ['name', 'username', 'email', 'password']));
             $token = $this->getToken($user);
-            $otpCode = $this->generateOtp($user->email);
+            $otpCode = GeneratesOtp::generateOtp($user->email);
 
             UserRegistered::dispatch($user, $otpCode);
 
