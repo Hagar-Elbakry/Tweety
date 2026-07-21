@@ -12,12 +12,13 @@ class FollowController extends Controller
 {
     public function __construct(
         protected FollowService $followService
-    ) {}
+    ) {
+    }
 
     public function __invoke(ToggleFollowRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $result = $this->followService->toggleFollow($data);
+        $result = $this->followService->toggleFollow($data, $request->user);
 
         return ApiResponse::success(message: $result['message']);
     }
