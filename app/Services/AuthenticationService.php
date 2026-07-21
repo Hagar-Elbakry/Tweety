@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Helpers\GeneratesOtp;
 use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
 use App\Mail\WelcomeUserMail;
@@ -40,10 +41,6 @@ class AuthenticationService
         return $user->createToken('auth_token.'.$user->username)->plainTextToken;
     }
 
-    private function generateOtp(string $email): string
-    {
-        return $this->otp->generate($email, 'numeric', 6, 15)->token;
-    }
 
     public function login(array $data): ?array
     {
@@ -150,7 +147,7 @@ class AuthenticationService
         if ($user->hasVerifiedEmail()) {
             return null;
         }
-        $otpCode = $this->generateOtp($user->email);
+        $otpCode = GeneratesOtp::generateOtp($user->email);
         Mail::to($user)->queue(new VerifyEmail($user, $otpCode));
 
         return $user;
@@ -159,7 +156,7 @@ class AuthenticationService
     public function sendPasswordResetOtp(array $data): void
     {
         $user = $this->getUser($data['email']);
-        $otpCode = $this->generateOtp($user->email);
+        $otpCode = GeneratesOtp::generateOtp($user->email);
         Mail::to($user)->queue(new ResetPassword($user, $otpCode));
     }
 
