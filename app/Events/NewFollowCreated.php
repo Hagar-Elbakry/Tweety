@@ -3,13 +3,12 @@
 namespace App\Events;
 
 use App\Models\User;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class NewFollowCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     /**
      * Create a new event instance.
@@ -17,6 +16,7 @@ class NewFollowCreated
     public function __construct(
         public User $follower,
         public User $following
-    ) {}
+    ) {
+    }
 
 }
