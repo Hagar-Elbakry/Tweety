@@ -31,7 +31,7 @@ class NotificationsController extends Controller
                     ];
                 }
             }
-            $request->user()->unreadNotifications->markAsRead();
+            $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
             return ApiResponse::success(message: 'Notifications fetched successfully',
                 data: NotificationResource::collection($notifications));
