@@ -16,8 +16,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Maize\Markable\Models\Bookmark;
-use Maize\Markable\Models\Like;
+use Maize\Markable\Mark;
 
 class PostController extends Controller
 {
@@ -75,8 +74,8 @@ class PostController extends Controller
     {
         try {
             $user = $request->user();
-            $action->execute($post, $user);
-            if (Like::has($post, $user)) {
+            $result = $action->execute($post, $user);
+            if ($result instanceof Mark) {
                 return ApiResponse::success(message: 'Post liked successfully');
             } else {
                 return ApiResponse::success(message: 'Post unliked successfully');
@@ -93,8 +92,8 @@ class PostController extends Controller
     {
         try {
             $user = $request->user();
-            $action->execute($post, $user);
-            if (Bookmark::has($post, $user)) {
+            $result = $action->execute($post, $user);
+            if ($result instanceof Mark) {
                 return ApiResponse::success(message: 'Post bookmarked successfully');
             } else {
                 return ApiResponse::success(message: 'Post unbookmarked successfully');
