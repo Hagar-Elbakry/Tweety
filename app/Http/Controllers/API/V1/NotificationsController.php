@@ -19,7 +19,6 @@ class NotificationsController extends Controller
             $unreadNotifications = $request->user()->unreadNotifications;
             $notifications = [];
             foreach ($unreadNotifications as $notification) {
-                $notification->markAsRead();
                 if ($notification->type === 'Follow') {
                     $notifications[] = [
                         'type' => 'follow',
@@ -32,6 +31,7 @@ class NotificationsController extends Controller
                     ];
                 }
             }
+            $request->user()->unreadNotifications->markAsRead();
 
             return ApiResponse::success(message: 'Notifications fetched successfully',
                 data: NotificationResource::collection($notifications));
