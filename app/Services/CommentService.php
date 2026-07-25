@@ -11,7 +11,7 @@ class CommentService
     {
         return $post->load([
             'comments' => function ($query) {
-                $query->whereNull('parent_id');
+                $query->whereNull('parent_id')->with(['user', 'replies.user']);
             },
         ]);
     }
