@@ -38,7 +38,7 @@ class AuthenticationService
 
     private function getToken(User $user): string
     {
-        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
+        return $user->createToken(name: 'auth_token.'.$user->username, expiresAt: now()->addDays(30))->plainTextToken;
     }
 
 
