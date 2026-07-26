@@ -18,7 +18,7 @@ it('can comment on a post', function () {
 it('can get comments on a post', function () {
     $this->post->comments()->create([
         'body' => 'test comment',
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
     $response = $this->actingAs($this->user, 'sanctum')->getJson(route('posts.comments.index', $this->post));
     $response->assertStatus(200);
@@ -28,7 +28,7 @@ it('can get comments on a post', function () {
 it('can delete a comment on a post by comment owner', function () {
     $comment = $this->post->comments()->create([
         'body' => 'test comment',
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
     $response = $this->actingAs($this->user, 'sanctum')->deleteJson(route('comments.destroy', [$comment]));
     $response->assertStatus(200);
@@ -38,7 +38,7 @@ it('can delete a comment on a post by comment owner', function () {
 it('can delete a comment on a post by post owner', function () {
     $comment = $this->post->comments()->create([
         'body' => 'test comment',
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
     $response = $this->actingAs($this->post->user, 'sanctum')->deleteJson(route('comments.destroy',
         [$comment]));
@@ -50,7 +50,7 @@ it('cannot delete a comment on a post by other user', function () {
     $otherUser = User::factory()->create();
     $comment = $this->post->comments()->create([
         'body' => 'test comment',
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
     $response = $this->actingAs($otherUser, 'sanctum')->deleteJson(route('comments.destroy', [$comment]));
     $response->assertStatus(403);

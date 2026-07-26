@@ -4,7 +4,6 @@ use App\Events\UserRegistered;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
-
 beforeEach(function () {
     $this->validData = [
         'name' => 'Test User',
@@ -55,7 +54,7 @@ it('fails registration if email is already taken', function () {
         'success' => false,
         'data' => [
             'email' => ['The email has already been taken.'],
-        ]
+        ],
     ]);
 });
 
@@ -69,6 +68,6 @@ it('fails registration with invalid data', function (array $invalidField) {
     $response->assertStatus(422);
 })->with([
     'invalid username' => [['username' => '@testuser']],
-    'taken username' => [fn() => ['username' => User::factory()->create()->username]],
+    'taken username' => [fn () => ['username' => User::factory()->create()->username]],
     'password not match' => [['password_confirmation' => 'wrongpassword']],
 ]);

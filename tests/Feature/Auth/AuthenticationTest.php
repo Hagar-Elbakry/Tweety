@@ -2,7 +2,6 @@
 
 use App\Models\User;
 
-
 beforeEach(function () {
     $user = User::factory()->create([
         'email' => 'test@gmail.com',
@@ -16,7 +15,7 @@ beforeEach(function () {
 
 dataset('invalidData', [
     'wrong email' => [['email' => 'notExit@gmail.com']],
-    'worng password' => [['password' => 'wrongpassword']]
+    'worng password' => [['password' => 'wrongpassword']],
 ]);
 
 it('allow user to login', function () {
@@ -28,7 +27,7 @@ it('allow user to login', function () {
         'data' => [
             'user',
             'token',
-        ]
+        ],
     ]);
 });
 
@@ -37,7 +36,7 @@ it('fails login with invalid data', function (array $invalidField) {
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
-        'message' => 'The provided credentials do not match our records.'
+        'message' => 'The provided credentials do not match our records.',
     ]);
 })->with('invalidData');
 
@@ -55,4 +54,3 @@ it('allow user to logout', function () {
         ->postJson(route('logout'));
     $response2->assertStatus(401);
 });
-

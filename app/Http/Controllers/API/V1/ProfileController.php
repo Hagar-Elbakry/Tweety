@@ -17,8 +17,7 @@ class ProfileController extends Controller
 {
     public function __construct(
         protected ProfileService $profileService
-    ) {
-    }
+    ) {}
 
     public function show(User $user): JsonResponse
     {
@@ -33,6 +32,7 @@ class ProfileController extends Controller
             Log::error('Error fetching profile: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to fetch profile, please try again later.', status: 500);
         }
     }
@@ -50,6 +50,7 @@ class ProfileController extends Controller
             Log::error('Error fetching profile: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to fetch profile, please try again later.', status: 500);
         }
     }
@@ -66,6 +67,7 @@ class ProfileController extends Controller
             Log::error('Error updating profile: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to update profile, please try again later.', status: 500);
         }
     }

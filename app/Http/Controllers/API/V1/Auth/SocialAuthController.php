@@ -14,8 +14,7 @@ class SocialAuthController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {
-    }
+    ) {}
 
     public function redirectToGoogle(): JsonResponse
     {
@@ -42,6 +41,7 @@ class SocialAuthController extends Controller
             Log::error('Error handling Google callback: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to authenticate with Google', status: 500);
         }
     }

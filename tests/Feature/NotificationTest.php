@@ -3,7 +3,6 @@
 use App\Models\User;
 use App\Notifications\NewFollowNotification;
 
-
 beforeEach(function () {
     $this->user = User::factory()->create();
 });
@@ -18,9 +17,9 @@ it('get notifications', function () {
             '*' => [
                 'type',
                 'user',
-                'created_at'
-            ]
-        ]
+                'created_at',
+            ],
+        ],
     ]);
 });
 
@@ -28,6 +27,6 @@ it('returns empty notifications when user  has no notifications', function () {
     $response = $this->actingAs($this->user, 'sanctum')->getJson(route('notifications'));
     $response->assertStatus(200);
     $response->assertJson([
-        'data' => []
+        'data' => [],
     ]);
 });

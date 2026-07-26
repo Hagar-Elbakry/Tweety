@@ -20,8 +20,7 @@ class AuthenticationService
 {
     public function __construct(
         protected Otp $otp
-    ) {
-    }
+    ) {}
 
     public function register(array $data): array
     {
@@ -41,11 +40,10 @@ class AuthenticationService
         return $user->createToken(name: 'auth_token.'.$user->username, expiresAt: now()->addDays(30))->plainTextToken;
     }
 
-
     public function login(array $data): ?array
     {
         $user = $this->authenticate($data['email'], $data['password']);
-        if (!$user) {
+        if (! $user) {
             return null;
         }
         $token = $this->getToken($user);
@@ -56,7 +54,7 @@ class AuthenticationService
     private function authenticate(string $email, string $password): ?User
     {
         $user = $this->getUser($email);
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             return null;
         }
 
@@ -86,7 +84,7 @@ class AuthenticationService
 
         return DB::transaction(function () use ($googleUser) {
             $user = User::where('email', $googleUser->getEmail())->first();
-            if (!$user) {
+            if (! $user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
@@ -98,7 +96,7 @@ class AuthenticationService
                 ]);
                 Mail::to($user)->queue(new WelcomeUserMail($user));
             } else {
-                if (!$user->provider) {
+                if (! $user->provider) {
                     $user->update([
                         'provider' => 'google',
                         'provider_id' => $googleUser->getId(),
@@ -131,7 +129,7 @@ class AuthenticationService
     {
         return DB::transaction(function () use ($data, $user) {
             $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if (!$validatedOtp->status) {
+            if (! $validatedOtp->status) {
                 return null;
             }
             $user->update([
@@ -163,12 +161,13 @@ class AuthenticationService
     public function verifyOtp(array $data): ?string
     {
         $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-        if (!$validatedOtp->status) {
+        if (! $validatedOtp->status) {
             return null;
         }
         $user = $this->getUser($data['email']);
         $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
             now()->addMinutes(15))->plainTextToken;
+
         return $token;
     }
 

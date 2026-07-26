@@ -2,7 +2,6 @@
 
 use App\Models\User;
 
-
 beforeEach(function () {
     $this->user = User::factory()->create([
         'email_verified_at' => null,
@@ -17,7 +16,7 @@ it('user can verify email', function () {
     $this->assertDatabaseHas('otps', ['valid' => 0]);
     $response->assertJson([
         'success' => true,
-        'message' => 'User verified successfully'
+        'message' => 'User verified successfully',
     ]);
 });
 
@@ -26,7 +25,7 @@ it('fails to verify email with wrong otp', function () {
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
-        'message' => 'Invalid Or Expired OTP'
+        'message' => 'Invalid Or Expired OTP',
     ]);
 });
 
@@ -36,7 +35,7 @@ it('fails to verify email with expired otp', function () {
     $response->assertStatus(401);
     $response->assertJson([
         'success' => false,
-        'message' => 'Invalid Or Expired OTP'
+        'message' => 'Invalid Or Expired OTP',
     ]);
 });
 
@@ -46,7 +45,7 @@ it('resend email verification otp', function () {
     $this->assertDatabaseHas('otps', ['identifier' => $this->user->email]);
     $response->assertJson([
         'success' => true,
-        'message' => 'Resend verification otp successfully'
+        'message' => 'Resend verification otp successfully',
     ]);
 });
 
@@ -56,6 +55,6 @@ it('fails to resend email verification otp with verified email', function () {
     $response->assertStatus(409);
     $response->assertJson([
         'success' => false,
-        'message' => 'User already verified'
+        'message' => 'User already verified',
     ]);
 });

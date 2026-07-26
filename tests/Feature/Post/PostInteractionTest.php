@@ -12,7 +12,7 @@ it('can like a post', function () {
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('posts.like', $this->post));
     $response->assertStatus(200);
     $response->assertJson([
-        'message' => 'Post liked successfully'
+        'message' => 'Post liked successfully',
     ]);
 });
 
@@ -21,7 +21,7 @@ it('can unlike a post', function () {
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('posts.like', $this->post));
     $response->assertStatus(200);
     $response->assertJson([
-        'message' => 'Post unliked successfully'
+        'message' => 'Post unliked successfully',
     ]);
 });
 
@@ -29,7 +29,7 @@ it('can bookmark a post', function () {
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('posts.bookmark', $this->post));
     $response->assertStatus(200);
     $response->assertJson([
-        'message' => 'Post bookmarked successfully'
+        'message' => 'Post bookmarked successfully',
     ]);
 });
 
@@ -38,6 +38,6 @@ it('can unbookmark a post', function () {
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('posts.bookmark', $this->post));
     $response->assertStatus(200);
     $response->assertJson([
-        'message' => 'Post unbookmarked successfully'
+        'message' => 'Post unbookmarked successfully',
     ]);
 });

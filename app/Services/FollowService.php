@@ -13,7 +13,7 @@ class FollowService
     {
         $userToFollow = User::query()->findOrFail($data['user_id']);
         $changes = $user->following()->toggle($userToFollow->id);
-        if (!empty($changes['attached'])) {
+        if (! empty($changes['attached'])) {
             event(new NewFollowCreated($user, $userToFollow));
 
             return ['message' => 'Successfully followed the user.'];
@@ -22,6 +22,7 @@ class FollowService
             ->where('type', ActivityType::FOLLOW)
             ->where('target_id', $userToFollow->id)
             ->delete();
+
         return ['message' => 'Successfully unfollowed the user.'];
     }
 }

@@ -20,8 +20,8 @@ it('can create a post', function () {
             'comments_count',
             'created_at',
             'updated_at',
-            'user'
-        ]
+            'user',
+        ],
     ]);
 });
 

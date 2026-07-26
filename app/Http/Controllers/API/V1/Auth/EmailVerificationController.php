@@ -15,8 +15,7 @@ class EmailVerificationController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {
-    }
+    ) {}
 
     public function verify(VerifyEmailRequest $request): JsonResponse
     {
@@ -24,14 +23,16 @@ class EmailVerificationController extends Controller
             $data = $request->validated();
             $user = $request->user();
             $result = $this->userService->verifyEmail($data, $user);
-            if (!$result) {
+            if (! $result) {
                 return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
             }
+
             return ApiResponse::success(message: 'User verified successfully');
         } catch (Exception $e) {
             Log::error('Error verifying user: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Could not verify user, please try again later.', status: 500);
         }
     }
@@ -41,7 +42,7 @@ class EmailVerificationController extends Controller
         try {
             $user = $request->user();
             $result = $this->userService->resendEmailVerificationOtp($user);
-            if (!$result) {
+            if (! $result) {
                 return ApiResponse::error(message: 'User already verified', status: 409);
             }
 
@@ -50,6 +51,7 @@ class EmailVerificationController extends Controller
             Log::error('Error sending verification code: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Could not send verification code, please try again later.',
                 status: 500);
         }

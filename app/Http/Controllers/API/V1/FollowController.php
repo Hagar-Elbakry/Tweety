@@ -14,8 +14,7 @@ class FollowController extends Controller
 {
     public function __construct(
         protected FollowService $followService
-    ) {
-    }
+    ) {}
 
     public function __invoke(ToggleFollowRequest $request): JsonResponse
     {
@@ -28,6 +27,7 @@ class FollowController extends Controller
             Log::error('Failed to toggle follow: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to toggle follow', status: 500);
         }
     }
