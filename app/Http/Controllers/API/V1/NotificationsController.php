@@ -16,20 +16,27 @@ class NotificationsController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $unreadNotifications = $request->user()->unreadNotifications;
+            $unreadNotifications = $request->user()->unreadNotifications()->latest()->get();
             $notifications = [];
             foreach ($unreadNotifications as $notification) {
-                if ($notification->type === 'Follow') {
-                    $notifications[] = [
-                        'type' => 'follow',
-                        'user' => [
-                            'name' => $notification->data['follower_name'],
-                            'username' => $notification->data['follower_username'],
-                            'avatar' => $notification->data['follower_avatar'] ? Storage::url($notification->data['follower_avatar']) : null,
-                        ],
-                        'created_at' => $notification->created_at,
-                    ];
+                $notificationData = [
+                    'type' => $notification->type,
+                    'user' => [
+                        'id' => $notification->data['user_id'],
+                        'name' => $notification->data['user_name'],
+                        'username' => $notification->data['user_username'],
+                        'avatar' => $notification->data['user_avatar'] ? Storage::url($notification->data['user_avatar']) : null
+                    ],
+                    'message' => $notification->data['message'],
+                    'created_at' => $notification->created_at
+                ];
+                if ($notification->type === 'Like') {
+                    $notificationData['post'] = $notification->data['post'];
+                } elseif ($notification->type === 'Comment') {
+                    $notificationData['replying_to_username'] = $notification->data['replying_to_username'];
+                    $notificationData['comment'] = $notification->data['comment'];
                 }
+                $notifications[] = $notificationData;
             }
             $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
