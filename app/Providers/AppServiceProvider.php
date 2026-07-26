@@ -61,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',
             'Like' => 'App\Notifications\NewLikeNotification',
+            'comment' => 'App\Notifications\NewCommentNotification',
         ]);
     }
 }
