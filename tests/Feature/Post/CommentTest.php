@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Notifications\NewCommentNotification;
+use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -9,9 +11,11 @@ beforeEach(function () {
 });
 
 it('can comment on a post', function () {
+    Notification::fake();
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('posts.comments.store', $this->post),
         ['body' => 'test comment']);
     $response->assertStatus(200);
+    Notification::assertSentTo($this->post->user, NewCommentNotification::class);
     $this->assertDatabaseHas('comments', ['body' => 'test comment']);
 });
 
