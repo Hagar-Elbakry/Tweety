@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\NewLikeCreated;
 use App\Helpers\ApiResponse;
+use App\Listeners\CreateLikeActivity;
+use App\Listeners\CreateUserLikeNotification;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -57,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
         });
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',
+            'Like' => 'App\Notifications\NewLikeNotification',
         ]);
     }
 }
