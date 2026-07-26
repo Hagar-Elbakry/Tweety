@@ -16,15 +16,14 @@ class AuthenticatedUserController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {
-    }
+    ) {}
 
     public function login(LoginUserRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
             $result = $this->userService->login($data);
-            if (!$result) {
+            if (! $result) {
                 return ApiResponse::error(message: 'The provided credentials do not match our records.', status: 401);
             }
 
@@ -39,6 +38,7 @@ class AuthenticatedUserController extends Controller
             Log::error('Error logging in user: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to login user, please try again later.', status: 500);
         }
     }
@@ -54,6 +54,7 @@ class AuthenticatedUserController extends Controller
             Log::error('Error logging out user: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to logout user, please try again later.', status: 500);
         }
     }

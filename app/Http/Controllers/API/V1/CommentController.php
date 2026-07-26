@@ -18,8 +18,7 @@ class CommentController extends Controller
 {
     public function __construct(
         protected CommentService $commentService
-    ) {
-    }
+    ) {}
 
     public function index(Post $post): JsonResponse
     {
@@ -31,6 +30,7 @@ class CommentController extends Controller
             Log::error('Error fetching comments: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to fetch comments', status: 500);
         }
     }
@@ -46,6 +46,7 @@ class CommentController extends Controller
             Log::error('Error creating comment: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to create comment', status: 500);
         }
     }
@@ -60,6 +61,7 @@ class CommentController extends Controller
             Log::error('Error deleting comment: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to delete comment', status: 500);
         }
     }

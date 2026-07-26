@@ -22,8 +22,7 @@ class PostController extends Controller
 {
     public function __construct(
         protected PostService $postService
-    ) {
-    }
+    ) {}
 
     public function store(StorePostRequest $request): JsonResponse
     {
@@ -38,6 +37,7 @@ class PostController extends Controller
             Log::error('Error creating post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to create post, please try again later.', status: 500);
         }
     }
@@ -47,11 +47,13 @@ class PostController extends Controller
         try {
             $data = $request->validated();
             $post = $this->postService->update($data, $post);
+
             return ApiResponse::success(message: 'Post updated successfully', data: new PostResource($post));
         } catch (Exception $e) {
             Log::error('Error updating post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to update post, please try again later.', status: 500);
         }
     }
@@ -66,6 +68,7 @@ class PostController extends Controller
             Log::error('Error deleting post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to delete post, please try again later.', status: 500);
         }
     }
@@ -84,6 +87,7 @@ class PostController extends Controller
             Log::error('Error liking post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to like post, please try again later.', status: 500);
         }
     }
@@ -102,6 +106,7 @@ class PostController extends Controller
             Log::error('Error bookmarking post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to bookmark post, please try again later.', status: 500);
         }
     }

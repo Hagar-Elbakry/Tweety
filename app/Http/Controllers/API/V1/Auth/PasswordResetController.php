@@ -16,8 +16,7 @@ class PasswordResetController extends Controller
 {
     public function __construct(
         protected AuthenticationService $userService
-    ) {
-    }
+    ) {}
 
     public function sendOtp(ForgetPasswordRequest $request): JsonResponse
     {
@@ -30,6 +29,7 @@ class PasswordResetController extends Controller
             Log::error('Error sending OTP: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to send OTP, please try again later.', status: 500);
         }
     }
@@ -39,7 +39,7 @@ class PasswordResetController extends Controller
         try {
             $data = $request->validated();
             $token = $this->userService->verifyOtp($data);
-            if (!$token) {
+            if (! $token) {
                 return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
             }
 
@@ -49,6 +49,7 @@ class PasswordResetController extends Controller
             Log::error('Error sending OTP: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to send OTP, please try again later.');
         }
     }
@@ -65,6 +66,7 @@ class PasswordResetController extends Controller
             Log::error('Error sending OTP: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to reset password, please try again later.', status: 500);
         }
     }

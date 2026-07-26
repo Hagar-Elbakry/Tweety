@@ -21,7 +21,7 @@ it('shows my profile', function () {
             'posts',
             'created_at',
             'updated_at',
-        ]
+        ],
     ]);
 });
 
@@ -38,7 +38,7 @@ it('shows user profile', function () {
             'posts',
             'created_at',
             'updated_at',
-        ]
+        ],
     ]);
 });
 
@@ -61,7 +61,7 @@ it('can update profile', function () {
             'bio',
             'created_at',
             'updated_at',
-        ]
+        ],
     ]);
     $this->assertDatabaseHas('users', [
         'name' => 'Updated Name',

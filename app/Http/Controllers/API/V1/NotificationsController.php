@@ -39,6 +39,7 @@ class NotificationsController extends Controller
             Log::error('Failed to fetch notifications: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
             ]);
+
             return ApiResponse::error(message: 'Failed to fetch notifications', status: 500);
         }
     }

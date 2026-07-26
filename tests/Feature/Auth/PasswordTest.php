@@ -5,11 +5,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
-
 beforeEach(function () {
     $user = User::factory()->create();
     $this->validData = [
-        'email' => $user->email
+        'email' => $user->email,
     ];
 });
 
@@ -27,7 +26,7 @@ it('fails to forget password if email is doesnt\'s exist', function () {
         'success' => false,
         'data' => [
             'email' => ['The selected email is invalid.'],
-        ]
+        ],
     ]);
 });
 
@@ -38,7 +37,7 @@ it('verifies otp', function () {
     $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
-            'otp' => $otp
+            'otp' => $otp,
         ]);
     $response->assertStatus(200);
 });
@@ -47,7 +46,7 @@ it('fails to verify wrong otp', function () {
     $this->postJson(route('sendOtp'), $this->validData);
     $response = $this->postJson(route('verifyOtp'), [
         'email' => $this->validData['email'],
-        'otp' => '000000'
+        'otp' => '000000',
     ]);
     $response->assertStatus(401);
 });
@@ -55,7 +54,7 @@ it('fails to verify expired otp', function () {
     insertOtp($this->validData['email'], true);
     $response = $this->postJson(route('verifyOtp'), [
         'email' => $this->validData['email'],
-        'otp' => '123456'
+        'otp' => '123456',
     ]);
     $response->assertStatus(401);
 });
@@ -66,14 +65,14 @@ it('allow user to reset password', function () {
     $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
-            'otp' => $otp
+            'otp' => $otp,
         ]);
 
     $token = $response->json('data.token');
     $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson(route('resetPassword'), [
             'password' => 'password',
-            'password_confirmation' => 'password'
+            'password_confirmation' => 'password',
         ])
         ->assertStatus(200);
 });
@@ -84,19 +83,19 @@ it('fails to reset password if password doesnt match', function () {
     $response = $this->postJson(route('verifyOtp'),
         [
             'email' => $this->validData['email'],
-            'otp' => $otp
+            'otp' => $otp,
         ]);
     $token = $response->json('data.token');
     $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson(route('resetPassword'), [
             'password' => 'password',
-            'password_confirmation' => 'wrongpassword'
+            'password_confirmation' => 'wrongpassword',
         ])
         ->assertStatus(422)
         ->assertJson([
             'success' => false,
             'data' => [
                 'password' => ['The password field confirmation does not match.'],
-            ]
+            ],
         ]);
 });

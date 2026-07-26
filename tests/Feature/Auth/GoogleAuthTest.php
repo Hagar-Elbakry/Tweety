@@ -9,11 +9,11 @@ use Laravel\Socialite\Two\User;
 beforeEach(function () {
     Mail::fake();
     $this->googleEmail = 'test@gmail.com';
-    $googleUser = (new User())->map([
+    $googleUser = (new User)->map([
         'id' => '123456789',
         'name' => 'Test User',
         'email' => 'test@gmail.com',
-        'avatar' => null
+        'avatar' => null,
     ]);
     Socialite::shouldReceive('driver->stateless->user')->andReturn($googleUser);
 });
@@ -27,7 +27,7 @@ it('creates a user with google credentials', function () {
         'data' => [
             'user',
             'token',
-        ]
+        ],
     ]);
 });
 
@@ -41,6 +41,6 @@ it('login user if already exists with google credentials', function () {
         'data' => [
             'user',
             'token',
-        ]
+        ],
     ]);
 });

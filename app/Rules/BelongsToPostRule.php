@@ -11,8 +11,7 @@ class BelongsToPostRule implements ValidationRule
 {
     public function __construct(
         protected $postId
-    ) {
-    }
+    ) {}
 
     /**
      * Run the validation rule.
@@ -25,7 +24,7 @@ class BelongsToPostRule implements ValidationRule
             ->where('id', $value)
             ->where('post_id', $this->postId)
             ->exists();
-        if (!$belongsToPost) {
+        if (! $belongsToPost) {
             $fail('The selected parent comment is invalid or belongs to another post.');
         }
     }
