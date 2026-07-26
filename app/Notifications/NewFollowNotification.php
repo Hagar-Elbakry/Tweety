@@ -19,7 +19,8 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function __construct(
         protected User $follower,
         protected User $following
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -44,10 +45,10 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function toArray(object $notifiable): array
     {
         return [
-            'follower_id' => $this->follower->id,
-            'follower_name' => $this->follower->name,
-            'follower_username' => $this->follower->username,
-            'follower_avatar' => $this->follower->avatar,
+            'user_id' => $this->follower->id,
+            'user_name' => $this->follower->name,
+            'user_username' => $this->follower->username,
+            'user_avatar' => $this->follower->avatar,
             'message' => 'started following you',
         ];
     }
@@ -55,10 +56,10 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'follower_id' => $this->follower->id,
-            'follower_name' => $this->follower->name,
-            'follower_username' => $this->follower->username,
-            'follower_avatar' => $this->follower->avatar,
+            'user_id' => $this->follower->id,
+            'user_name' => $this->follower->name,
+            'user_username' => $this->follower->username,
+            'user_avatar' => $this->follower->avatar,
             'message' => 'started following you',
         ]);
     }
