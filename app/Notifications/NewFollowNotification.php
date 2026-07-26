@@ -46,21 +46,24 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
         return [
             'follower_id' => $this->follower->id,
             'follower_name' => $this->follower->name,
+            'follower_username' => $this->follower->username,
+            'follower_avatar' => $this->follower->avatar,
             'message' => 'started following you',
         ];
     }
 
-    public function toBroadcast($notifiable): BroadcastMessage
+    public function toBroadcast(object $notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
             'follower_id' => $this->follower->id,
             'follower_name' => $this->follower->name,
+            'follower_username' => $this->follower->username,
             'follower_avatar' => $this->follower->avatar,
             'message' => 'started following you',
         ]);
     }
 
-    public function broadcastOn()
+    public function broadcastOn(): PrivateChannel
     {
         return new PrivateChannel('follow-notifications.'.$this->following->id);
     }

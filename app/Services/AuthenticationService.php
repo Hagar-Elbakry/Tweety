@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Helpers\GeneratesOtp;
 use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
+use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -23,14 +25,19 @@ class AuthenticationService
     public function register(array $data): array
     {
         return DB::transaction(function () use ($data) {
-            $user = User::create($data);
+            $user = User::create(Arr::only($data, ['name', 'username', 'email', 'password']));
             $token = $this->getToken($user);
-            $otpCode = $this->generateOtp($user->email);
+            $otpCode = GeneratesOtp::generateOtp($user->email);
 
             UserRegistered::dispatch($user, $otpCode);
 
             return compact('user', 'token');
         });
+    }
+
+    private function getToken(User $user): string
+    {
+        return $user->createToken(name: 'auth_token.'.$user->username, expiresAt: now()->addDays(30))->plainTextToken;
     }
 
     public function login(array $data): ?array
@@ -44,9 +51,24 @@ class AuthenticationService
         return compact('user', 'token');
     }
 
-    public function logout(Request $request): void
+    private function authenticate(string $email, string $password): ?User
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $this->getUser($email);
+        if (! $user || ! Hash::check($password, $user->password)) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    private function getUser(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    public function logout(User $user): void
+    {
+        $user->currentAccessToken()->delete();
     }
 
     public function redirectToGoogle(): string
@@ -67,101 +89,24 @@ class AuthenticationService
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
                     'email' => $googleUser->getEmail(),
-                    'password' => Str::random(8),
+                    'password' => Str::random(32),
                     'provider' => 'google',
                     'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
                 ]);
-                UserRegistered::dispatch($user, null);
+                Mail::to($user)->queue(new WelcomeUserMail($user));
+            } else {
+                if (! $user->provider) {
+                    $user->update([
+                        'provider' => 'google',
+                        'provider_id' => $googleUser->getId(),
+                    ]);
+                }
             }
             $token = $this->getToken($user);
 
             return compact('user', 'token');
         });
-    }
-
-    public function verifyEmail(array $data): ?User
-    {
-        $user = auth()->user();
-
-        return DB::transaction(function () use ($data, $user) {
-            $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if (! $validatedOtp->status) {
-                return null;
-            }
-            $user->update([
-                'email_verified_at' => now(),
-            ]);
-
-            return $user;
-        });
-    }
-
-    public function resendEmailVerificationOtp(): ?User
-    {
-        $user = auth()->user();
-        if ($user->hasVerifiedEmail()) {
-            return null;
-        }
-        $otpCode = $this->generateOtp($user->email);
-        Mail::to($user)->queue(new VerifyEmail($user, $otpCode));
-
-        return $user;
-    }
-
-    public function sendPasswordResetOtp(array $data): void
-    {
-        $user = $this->getUser($data['email']);
-        $otpCode = $this->generateOtp($user->email);
-        Mail::to($user)->queue(new ResetPassword($user, $otpCode));
-    }
-
-    public function verifyOtp(array $data): ?string
-    {
-        return DB::transaction(function () use ($data) {
-            $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-            if (! $validatedOtp->status) {
-                return null;
-            }
-            $user = $this->getUser($data['email']);
-            $token = $user->createToken('password_reset.'.$user->username, ['reset-password'], now()->addMinutes(15))->plainTextToken;
-
-            return $token;
-        });
-    }
-
-    public function resetPassword(array $data): void
-    {
-        $user = auth()->user();
-        $user->update([
-            'password' => $data['password'],
-        ]);
-        $user->tokens()->delete();
-    }
-
-    private function getToken(User $user): string
-    {
-        return $user->createToken('auth_token.'.$user->username)->plainTextToken;
-    }
-
-    private function getUser(string $email): ?User
-    {
-        return User::where('email', $email)->first();
-    }
-
-    private function authenticate(string $email, string $password): ?User
-    {
-        $user = $this->getUser($email);
-        if (! $user || ! Hash::check($password, $user->password)) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    private function generateOtp(string $email): string
-    {
-        return $this->otp->generate($email, 'numeric', 6, 15)->token;
     }
 
     private function generateUniqueUsername(string $name): string
@@ -178,5 +123,59 @@ class AuthenticationService
         }
 
         return $username;
+    }
+
+    public function verifyEmail(array $data, User $user): ?User
+    {
+        return DB::transaction(function () use ($data, $user) {
+            $validatedOtp = $this->otp->validate($user->email, $data['otp']);
+            if (! $validatedOtp->status) {
+                return null;
+            }
+            $user->update([
+                'email_verified_at' => now(),
+            ]);
+
+            return $user;
+        });
+    }
+
+    public function resendEmailVerificationOtp(User $user): ?User
+    {
+        if ($user->hasVerifiedEmail()) {
+            return null;
+        }
+        $otpCode = GeneratesOtp::generateOtp($user->email);
+        Mail::to($user)->queue(new VerifyEmail($user, $otpCode));
+
+        return $user;
+    }
+
+    public function sendPasswordResetOtp(array $data): void
+    {
+        $user = $this->getUser($data['email']);
+        $otpCode = GeneratesOtp::generateOtp($user->email);
+        Mail::to($user)->queue(new ResetPassword($user, $otpCode));
+    }
+
+    public function verifyOtp(array $data): ?string
+    {
+        $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
+        if (! $validatedOtp->status) {
+            return null;
+        }
+        $user = $this->getUser($data['email']);
+        $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
+            now()->addMinutes(15))->plainTextToken;
+
+        return $token;
+    }
+
+    public function resetPassword(array $data, User $user): void
+    {
+        $user->update([
+            'password' => $data['password'],
+        ]);
+        $user->tokens()->delete();
     }
 }

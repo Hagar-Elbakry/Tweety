@@ -20,7 +20,7 @@ class ProfileResource extends JsonResource
             'username' => $this->username,
             $this->mergeWhen(auth()->id() === $this->id, [
                 'email' => $this->email,
-                'posts_count' => $this->posts()->count(),
+                'posts_count' => $this->posts_count,
             ]),
             'avatar' => $this->avatar ? Storage::url($this->avatar) : null,
             'banner' => $this->banner ? Storage::url($this->banner) : null,

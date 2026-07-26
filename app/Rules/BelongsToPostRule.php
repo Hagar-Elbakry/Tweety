@@ -20,11 +20,11 @@ class BelongsToPostRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $parentComment = Comment::query()
+        $belongsToPost = Comment::query()
             ->where('id', $value)
             ->where('post_id', $this->postId)
-            ->first();
-        if (! $parentComment) {
+            ->exists();
+        if (! $belongsToPost) {
             $fail('The selected parent comment is invalid or belongs to another post.');
         }
     }

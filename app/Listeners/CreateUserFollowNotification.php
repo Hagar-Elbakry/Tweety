@@ -3,17 +3,16 @@
 namespace App\Listeners;
 
 use App\Events\NewFollowCreated;
-use App\Models\User;
 use App\Notifications\NewFollowNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CreateUserFollowNotification
+class CreateUserFollowNotification implements ShouldQueue
 {
     /**
      * Handle the event.
      */
     public function handle(NewFollowCreated $event): void
     {
-        $user = User::query()->findOrFail($event->following->id);
-        $user->notify(new NewFollowNotification($event->follower, $event->following));
+        $event->following->notify(new NewFollowNotification($event->follower, $event->following));
     }
 }

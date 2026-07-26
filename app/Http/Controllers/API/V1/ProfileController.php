@@ -8,7 +8,10 @@ use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use App\Services\ProfileService;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -18,30 +21,54 @@ class ProfileController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        $profile = $this->profileService->getProfile($user);
+        try {
+            $profile = $this->profileService->getProfile($user);
 
-        return ApiResponse::success(
-            message: 'Profile fetched successfully.',
-            data: new ProfileResource($profile),
-        );
+            return ApiResponse::success(
+                message: 'Profile fetched successfully.',
+                data: new ProfileResource($profile),
+            );
+        } catch (Exception $e) {
+            Log::error('Error fetching profile: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return ApiResponse::error(message: 'Failed to fetch profile, please try again later.', status: 500);
+        }
     }
 
-    public function me(): JsonResponse
+    public function me(Request $request): JsonResponse
     {
-        $profile = $this->profileService->getProfile(auth()->user());
+        try {
+            $profile = $this->profileService->getProfile($request->user());
 
-        return ApiResponse::success(
-            message: 'Profile fetched successfully.',
-            data: new ProfileResource($profile),
-        );
+            return ApiResponse::success(
+                message: 'Profile fetched successfully.',
+                data: new ProfileResource($profile),
+            );
+        } catch (Exception $e) {
+            Log::error('Error fetching profile: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return ApiResponse::error(message: 'Failed to fetch profile, please try again later.', status: 500);
+        }
     }
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $user = auth()->user();
-        $user = $this->profileService->update($data, $user);
+        try {
+            $data = $request->validated();
+            $user = $request->user();
+            $user = $this->profileService->update($data, $user);
 
-        return ApiResponse::success(message: 'Profile updated successfully.', data: new ProfileResource($user));
+            return ApiResponse::success(message: 'Profile updated successfully.', data: new ProfileResource($user));
+        } catch (Exception $e) {
+            Log::error('Error updating profile: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return ApiResponse::error(message: 'Failed to update profile, please try again later.', status: 500);
+        }
     }
 }

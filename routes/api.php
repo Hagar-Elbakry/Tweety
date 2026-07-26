@@ -16,7 +16,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         PasswordResetController::class, 'resetPassword',
     ])->name('resetPassword')->middleware('abilities:reset-password');
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
-    Route::get('email/verify/resend', [EmailVerificationController::class, 'resend'])->name('resend');
+    Route::post('email/verify/resend',
+        [EmailVerificationController::class, 'resend'])->name('resend')->middleware('throttle:resend-verification');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
@@ -27,7 +28,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts.comments', CommentController::class)
         ->shallow()
         ->only(['index', 'store', 'destroy']);
-    Route::post('/follow', FollowController::class);
+    Route::post('/follow', FollowController::class)->name('follow');
     Route::get('/notifications', NotificationsController::class)->name('notifications');
 });
 
@@ -38,7 +39,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
-    Route::post('/forget-password', [PasswordResetController::class, 'sendOtp'])->name('sendOtp');
+    Route::post('/forget-password',
+        [PasswordResetController::class, 'sendOtp'])->name('sendOtp')->middleware('throttle:forgot-password');
     Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('verifyOtp');
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
 });

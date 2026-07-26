@@ -8,6 +8,6 @@ class CommentPolicy
 {
     public function delete(User $user, $comment): bool
     {
-        return $user->id === $comment->user_id || $user->id === $comment->post->user_id;
+        return $user->id === $comment->user_id || $user->id === $comment->post()->value('user_id');
     }
 }

@@ -15,7 +15,7 @@ class NotSelfFollowingRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (auth()->id() == $value) {
+        if (request()->user()->id === (int) $value) {
             $fail('You cannot follow yourself.');
         }
     }

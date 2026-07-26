@@ -18,7 +18,9 @@ class WelcomeUserMail extends Mailable
      */
     public function __construct(
         public User $user
-    ) {}
+    ) {
+        $this->afterCommit();
+    }
 
     /**
      * Get the message envelope.

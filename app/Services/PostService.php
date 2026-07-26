@@ -3,21 +3,23 @@
 namespace App\Services;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Traits\Uploadable;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
     use Uploadable;
 
-    public function create(array $data): Post
+    public function create(array $data, User $user): Post
     {
         if (isset($data['image'])) {
-            $data['image'] = $this->UploadImage($data['image'], 'posts');
+            $data['image'] = $this->uploadImage($data['image'], 'posts');
         }
-        $post = Post::create($data);
+        $post = $user->posts()->create($data);
 
-        return $post->load('user');
+        return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks']);
     }
 
     public function update(array $data, Post $post): Post
@@ -26,7 +28,7 @@ class PostService
         $oldImagePath = $post->image;
         try {
             if (isset($data['image'])) {
-                $newImagePath = $this->UploadImage($data['image'], 'posts');
+                $newImagePath = $this->uploadImage($data['image'], 'posts');
                 $data['image'] = $newImagePath;
             }
             $post->update($data);
@@ -34,7 +36,7 @@ class PostService
                 $this->deleteImage($oldImagePath);
             }
 
-            return $post;
+            return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks']);
         } catch (Exception $e) {
             if ($newImagePath) {
                 $this->deleteImage($newImagePath);
@@ -48,7 +50,13 @@ class PostService
         $imagePath = $post->image;
         if ($post->delete()) {
             if ($imagePath) {
-                $this->deleteImage($imagePath);
+                try {
+                    $this->deleteImage($imagePath);
+                } catch (Exception $e) {
+                    Log::error('Failed to delete image: '.$e->getMessage(), [
+                        'stack' => $e->getTraceAsString(),
+                    ]);
+                }
             }
         }
     }
