@@ -14,7 +14,10 @@ class CommentService
         return $post->load([
             'comments' => function ($query) {
                 $query->whereNull('parent_id')->with([
-                    'user:id,name,username,avatar', 'replies.user:id,name,username,avatar',
+                    'user:id,name,username,avatar',
+                    'replies' => function ($q) {
+                        $q->with('user:id,name,username,avatar')->withCount('replies');
+                    }
                 ]);
             },
         ]);
