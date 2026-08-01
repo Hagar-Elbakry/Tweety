@@ -16,7 +16,11 @@ class ReplyController extends Controller
     {
         try {
             $replies = $action->execute($comment);
-            return ApiResponse::success(data: CommentResource::collection($replies));
+            return ApiResponse::success(data: [
+                'comments' => CommentResource::collection($replies),
+                'next_page_url' => $replies->nextPageUrl(),
+                'prev_next_url' => $replies->previousPageUrl(),
+            ]);
         } catch (Exception $e) {
             Log::error('Error fetching replies: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
