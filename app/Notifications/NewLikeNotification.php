@@ -20,8 +20,7 @@ class NewLikeNotification extends Notification implements ShouldBroadcast
     public function __construct(
         protected User $user,
         protected Post $post
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

@@ -18,8 +18,7 @@ class CommentController extends Controller
 {
     public function __construct(
         protected CommentService $commentService
-    ) {
-    }
+    ) {}
 
     public function index(Post $post): JsonResponse
     {

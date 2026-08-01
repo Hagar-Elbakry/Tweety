@@ -25,10 +25,10 @@ class NotificationsController extends Controller
                         'id' => $notification->data['user_id'],
                         'name' => $notification->data['user_name'],
                         'username' => $notification->data['user_username'],
-                        'avatar' => $notification->data['user_avatar'] ? Storage::url($notification->data['user_avatar']) : null
+                        'avatar' => $notification->data['user_avatar'] ? Storage::url($notification->data['user_avatar']) : null,
                     ],
                     'message' => $notification->data['message'],
-                    'created_at' => $notification->created_at
+                    'created_at' => $notification->created_at,
                 ];
                 if ($notification->type === 'Like') {
                     $notificationData['post'] = $notification->data['post'];

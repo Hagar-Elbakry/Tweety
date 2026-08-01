@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Events\NewLikeCreated;
 use App\Helpers\ApiResponse;
-use App\Listeners\CreateLikeActivity;
-use App\Listeners\CreateUserLikeNotification;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;

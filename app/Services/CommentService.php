@@ -17,7 +17,7 @@ class CommentService
                     'user:id,name,username,avatar',
                     'replies' => function ($q) {
                         $q->with('user:id,name,username,avatar')->withCount('replies');
-                    }
+                    },
                 ]);
             },
         ]);
@@ -36,6 +36,7 @@ class CommentService
                 $parentComment->user->notify(new NewCommentNotification($user, $parentComment->user, $comment));
             }
         }
+
         return $comment->load('user');
     }
 

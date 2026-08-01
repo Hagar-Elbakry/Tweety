@@ -21,8 +21,7 @@ class NewCommentNotification extends Notification implements ShouldBroadcast
         protected User $user,
         protected User $replyingToUser,
         protected Comment $comment
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

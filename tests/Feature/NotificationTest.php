@@ -15,12 +15,12 @@ beforeEach(function () {
 it('get notifications', function () {
     $post = Post::create([
         'body' => 'This is a test post',
-        'user_id' => $this->otherUser->id
+        'user_id' => $this->otherUser->id,
     ]);
     $comment = Comment::create([
         'body' => 'This is a test comment',
         'post_id' => $post->id,
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
     $this->user->notify(new NewFollowNotification($this->otherUser, $this->user));
     $this->otherUser->notify(new NewLikeNotification($this->user, $post));

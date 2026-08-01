@@ -15,6 +15,7 @@ final class LikePostAction
         $result = Like::toggle($post, $user);
         if ($result instanceof Mark) {
             $post->user->notify(new NewLikeNotification($user, $post));
+
             return ['message' => 'Post liked successfully.'];
         } else {
             return ['message' => 'Post unliked successfully.'];

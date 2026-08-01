@@ -19,8 +19,7 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function __construct(
         protected User $follower,
         protected User $following
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

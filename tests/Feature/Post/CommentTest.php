@@ -61,8 +61,8 @@ it('can get replies of a reply', function () {
                     ],
                     'has_more_replies' => false,
                 ],
-            ]
-        ]
+            ],
+        ],
     ]);
 });
 
@@ -82,25 +82,25 @@ it('returns next page of replies using cursor', function () {
             'body' => 'test reply of reply1',
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $reply->id
+            'parent_id' => $reply->id,
         ],
         [
             'body' => 'test reply of reply 2',
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $reply->id
+            'parent_id' => $reply->id,
         ],
         [
             'body' => 'test reply of reply 3',
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $reply->id
+            'parent_id' => $reply->id,
         ],
         [
             'body' => 'test reply of reply 4',
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $reply->id
+            'parent_id' => $reply->id,
         ],
     ]);
     $response = $this->actingAs($this->user, 'sanctum')->getJson(route('comments.replies.index', $reply));
