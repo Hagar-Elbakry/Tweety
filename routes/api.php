@@ -10,6 +10,7 @@ use App\Http\Controllers\API\V1\FollowController;
 use App\Http\Controllers\API\V1\NotificationsController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\API\V1\ReplyController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
@@ -28,6 +29,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts.comments', CommentController::class)
         ->shallow()
         ->only(['index', 'store', 'destroy']);
+    Route::get('comments/{comment}/replies', ReplyController::class)->name('comments.replies.index');
     Route::post('/follow', FollowController::class)->name('follow');
     Route::get('/notifications', NotificationsController::class)->name('notifications');
 });
