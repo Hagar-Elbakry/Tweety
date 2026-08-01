@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
@@ -9,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class NewFollowNotification extends Notification implements ShouldBroadcast
+class NewCommentNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -17,8 +18,9 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
      * Create a new notification instance.
      */
     public function __construct(
-        protected User $follower,
-        protected User $following
+        protected User $user,
+        protected User $replyingToUser,
+        protected Comment $comment
     ) {}
 
     /**
@@ -33,7 +35,7 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
 
     public function databaseType(): string
     {
-        return 'Follow';
+        return 'Comment';
     }
 
     /**
@@ -44,27 +46,31 @@ class NewFollowNotification extends Notification implements ShouldBroadcast
     public function toArray(object $notifiable): array
     {
         return [
-            'user_id' => $this->follower->id,
-            'user_name' => $this->follower->name,
-            'user_username' => $this->follower->username,
-            'user_avatar' => $this->follower->avatar,
-            'message' => 'started following you',
+            'user_id' => $this->user->id,
+            'user_name' => $this->user->name,
+            'user_username' => $this->user->username,
+            'user_avatar' => $this->user->avatar,
+            'replying_to_username' => $this->replyingToUser->username,
+            'comment' => $this->comment->body,
+            'message' => 'commented on your post',
         ];
     }
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'user_id' => $this->follower->id,
-            'user_name' => $this->follower->name,
-            'user_username' => $this->follower->username,
-            'user_avatar' => $this->follower->avatar,
-            'message' => 'started following you',
+            'user_id' => $this->user->id,
+            'user_name' => $this->user->name,
+            'user_username' => $this->user->username,
+            'user_avatar' => $this->user->avatar,
+            'replying_to_username' => $this->replyingToUser->username,
+            'comment' => $this->comment->body,
+            'message' => 'commented on your post',
         ]);
     }
 
     public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('follow-notifications.'.$this->following->id);
+        return new PrivateChannel('comment-notifications.'.$this->comment->post->user_id);
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
+use App\Events\NewFollowCreated;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -8,10 +10,12 @@ beforeEach(function () {
 });
 
 it('can follow user', function () {
+    Event::fake();
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('follow'), [
         'user_id' => $this->otherUser->id,
     ]);
     $response->assertStatus(200);
+    Event::assertDispatched(NewFollowCreated::class);
     $response->assertJson([
         'message' => 'Successfully followed the user.',
     ]);

@@ -20,6 +20,7 @@ class CommentResource extends JsonResource
             'body' => $this->body,
             'user' => new UserSimpleResource($this->whenLoaded('user')),
             'replies' => CommentResource::collection($this->whenLoaded('replies')),
+            'has_more_replies' => $this->replies_count > 0,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

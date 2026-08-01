@@ -39,7 +39,7 @@ class CommentController extends Controller
     {
         try {
             $data = $request->validated();
-            $comment = $this->commentService->store($post, $data);
+            $comment = $this->commentService->store($post, $data, $request->user());
 
             return ApiResponse::success(message: 'Comment created successfully', data: new CommentResource($comment));
         } catch (Exception $e) {

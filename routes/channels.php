@@ -5,3 +5,11 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('follow-notifications.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
+
+Broadcast::channel('like-notifications.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
+Broadcast::channel('comment-notifications.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});

@@ -78,11 +78,8 @@ class PostController extends Controller
         try {
             $user = $request->user();
             $result = $action->execute($post, $user);
-            if ($result instanceof Mark) {
-                return ApiResponse::success(message: 'Post liked successfully');
-            } else {
-                return ApiResponse::success(message: 'Post unliked successfully');
-            }
+
+            return ApiResponse::success(message: $result['message']);
         } catch (Exception $e) {
             Log::error('Error liking post: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),

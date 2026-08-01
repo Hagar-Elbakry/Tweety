@@ -8,7 +8,7 @@ beforeEach(function () {
     ]);
 });
 
-it('user can verify email', function () {
+it('can verify email', function () {
     insertOtp($this->user->email);
     $response = $this->actingAs($this->user, 'sanctum')->postJson(route('verify'), ['otp' => '123456']);
     $response->assertStatus(200);
