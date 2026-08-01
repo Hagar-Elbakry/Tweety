@@ -11,7 +11,7 @@ final class LoadMoreReplyAction
     {
         return Comment::where('parent_id', $comment->id)->with('user:id,name,username,avatar')
             ->withCount('replies')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->cursorPaginate(3);
     }
 }
