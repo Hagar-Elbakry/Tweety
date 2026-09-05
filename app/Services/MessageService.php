@@ -10,9 +10,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MessageService
 {
-    public function getMessagesForConversation(Conversation $conversation): LengthAwarePaginator
+    public function getMessagesForConversation(Conversation $conversation, User $user): LengthAwarePaginator
     {
-        return $conversation->messages()->with('sender')->paginate(10);
+        $messages = $conversation->messages()->with('sender')->paginate(10);
+        $conversation->users()->updateExistingPivot($user->id, ['read_at' => now()]);
+        return $messages;
     }
 
     public function sendMessage(Conversation $conversation, string $body, User $user): Message

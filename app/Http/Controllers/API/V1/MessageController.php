@@ -23,7 +23,7 @@ class MessageController extends Controller
     public function index(GetConversationMessageRequest $request, Conversation $conversation): JsonResponse
     {
         try {
-            $messages = $this->messageService->getMessagesForConversation($conversation);
+            $messages = $this->messageService->getMessagesForConversation($conversation, $request->user());
             return ApiResponse::success(message: 'Messages retrieved successfully',
                 data: MessageResource::collection($messages));
         } catch (Exception $e) {
