@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\ConversationUpdated;
 use App\Events\MessageSent;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -23,7 +24,9 @@ class MessageService
             'body' => $body,
             'sender_id' => $user->id
         ]);
+        $message->load('sender');
         broadcast(new MessageSent($message))->toOthers();
-        return $message->load('sender');
+        broadcast(new ConversationUpdated($message));
+        return $message;
     }
 }

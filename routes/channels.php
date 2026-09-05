@@ -17,3 +17,7 @@ Broadcast::channel('comment-notifications.{userId}', function ($user, $userId) {
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     return $user->conversations()->where('conversations.id', $conversationId)->exists();
 });
+
+Broadcast::channel('new-message.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
