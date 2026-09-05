@@ -22,4 +22,28 @@ class Conversation extends Model
     {
         return $this->hasMany(Message::class);
     }
+
+    public function lastMessage()
+    {
+        return $this->hasOne(Message::class)->latestOfMany();
+    }
+
+    public function isReadFor(User $user): bool
+    {
+        if (!$this->lastMessage) {
+            return true;
+        }
+
+        $readAt = $this->users()
+            ->where('users.id', $user->id)
+            ->first()
+            ?->pivot
+            ->read_at;
+
+        if (!$readAt) {
+            return false;
+        }
+
+        return $this->lastMessage->created_at->lessThanOrEqualTo($readAt);
+    }
 }

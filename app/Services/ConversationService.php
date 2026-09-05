@@ -4,9 +4,17 @@ namespace App\Services;
 
 use App\Models\Conversation;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ConversationService
 {
+    public function getUserConversations(User $user): LengthAwarePaginator
+    {
+        return Conversation::whereHas('users', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with(['users', 'lastMessage'])->paginate(20);
+    }
+
     public function findOrCreateBetween(User $sender, User $recipient): Conversation
     {
         $conversation = Conversation::whereHas('users', function ($query) use ($sender) {

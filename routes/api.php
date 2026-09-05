@@ -35,6 +35,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/follow', FollowController::class)->name('follow');
     Route::get('/notifications', NotificationsController::class)->name('notifications');
     Route::post('/conversations', [ConversationController::class, 'store'])->name('conversations.store');
+    Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('/conversations/{conversation}/messages',
         [MessageController::class, 'index'])->name('conversations.messages.index');
     Route::post('/conversations/{conversation}/messages',
