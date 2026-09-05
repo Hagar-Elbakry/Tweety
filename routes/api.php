@@ -37,6 +37,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/conversations', [ConversationController::class, 'store'])->name('conversations.store');
     Route::get('/conversations/{conversation}/messages',
         [MessageController::class, 'index'])->name('conversations.messages.index');
+    Route::post('/conversations/{conversation}/messages',
+        [MessageController::class, 'store'])->name('conversations.messages.store');
 });
 
 Route::prefix('v1')->group(function () {

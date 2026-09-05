@@ -13,3 +13,7 @@ Broadcast::channel('like-notifications.{userId}', function ($user, $userId) {
 Broadcast::channel('comment-notifications.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
+
+Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
+    return $user->conversations()->where('conversations.id', $conversationId)->exists();
+});
