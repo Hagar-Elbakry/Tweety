@@ -19,6 +19,13 @@ class MessageResource extends JsonResource
             'sender_avatar' => $this->sender->avatar,
             'body' => $this->body,
             'sent_at' => $this->created_at->toIsoString(),
+            'read_by' => $this->seenBy->map(function ($read) {
+                return [
+                    'name' => $read->user->name,
+                    'avatar' => $read->user->avatar,
+                    'seen_at' => $read->seen_at->toIsoString(),
+                ];
+            }),
             'is_mine' => $request->user()->is($this->sender),
         ];
     }
