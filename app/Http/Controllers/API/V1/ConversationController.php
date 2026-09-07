@@ -44,4 +44,15 @@ class ConversationController extends Controller
             return ApiResponse::error(message: 'Failed to create conversation');
         }
     }
+
+    public function unreadCount(Request $request): JsonResponse
+    {
+        try {
+            $count = $this->conversationService->getUnreadCount($request->user());
+            return ApiResponse::success(data: ['unread_count' => $count]);
+        } catch (Exception $e) {
+            Log::error('Failed to get unread count: '.$e->getMessage());
+            return ApiResponse::error(message: 'Failed to get unread count');
+        }
+    }
 }

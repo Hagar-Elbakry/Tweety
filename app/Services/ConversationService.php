@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -31,5 +32,16 @@ class ConversationService
         $conversation->users()->attach([$sender->id, $recipient->id]);
 
         return $conversation;
+    }
+
+    public function getUnreadCount(User $user): int
+    {
+        return Message::whereDoesntHave('seenBy', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->whereHas('conversation', function ($query) use ($user) {
+            $query->whereHas('users', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        })->where('sender_id', '!=', $user->id)->count();
     }
 }
