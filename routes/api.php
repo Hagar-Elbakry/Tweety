@@ -13,6 +13,7 @@ use App\Http\Controllers\API\V1\NotificationsController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\ReplyController;
+use App\Http\Controllers\TypingController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
@@ -41,6 +42,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [MessageController::class, 'index'])->name('conversations.messages.index');
     Route::post('/conversations/{conversation}/messages',
         [MessageController::class, 'store'])->name('conversations.messages.store');
+    Route::post('/conversations/{conversation}/typing', TypingController::class)->name('conversations.typing');
     Route::delete('/conversations/{conversation}/messages/{message}',
         [MessageController::class, 'destroy'])->name('conversations.messages.destroy');
     Route::patch('/conversations/{conversation}/messages/{message}',
