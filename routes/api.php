@@ -43,6 +43,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [MessageController::class, 'store'])->name('conversations.messages.store');
     Route::delete('/conversations/{conversation}/messages/{message}',
         [MessageController::class, 'destroy'])->name('conversations.messages.destroy');
+    Route::patch('/conversations/{conversation}/messages/{message}',
+        [MessageController::class, 'update'])->name('conversations.messages.update');
 });
 
 Route::prefix('v1')->group(function () {

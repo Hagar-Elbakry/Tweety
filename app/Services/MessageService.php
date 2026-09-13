@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\ConversationUpdated;
 use App\Events\MessageSent;
 use App\Events\MessagesRead;
+use App\Events\MessageUpdated;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\MessageDelete;
@@ -57,6 +58,13 @@ class MessageService
         $unreadCount = $this->conversationService->getUnreadCount($recipient);
         broadcast(new MessageSent($message))->toOthers();
         broadcast(new ConversationUpdated($message, $unreadCount));
+        return $message;
+    }
+
+    public function updateMessage(Message $message, string $body): Message
+    {
+        $message->update(['body' => $body]);
+        broadcast(new MessageUpdated($message))->toOthers();
         return $message;
     }
 

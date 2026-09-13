@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteMessageRequest;
 use App\Http\Requests\GetConversationMessageRequest;
 use App\Http\Requests\StoreMessageRequest;
+use App\Http\Requests\UpdateMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -42,6 +43,17 @@ class MessageController extends Controller
         } catch (Exception $e) {
             Log::error('Failed to send message: '.$e->getMessage());
             return ApiResponse::error(message: 'Failed to send message');
+        }
+    }
+
+    public function update(UpdateMessageRequest $request, Conversation $conversation, Message $message): JsonResponse
+    {
+        try {
+            $message = $this->messageService->updateMessage($message, $request->validated('body'));
+            return ApiResponse::success(message: 'Message updated successfully', data: new MessageResource($message));
+        } catch (Exception $e) {
+            Log::error('Failed to update message: '.$e->getMessage());
+            return ApiResponse::error(message: 'Failed to update message');
         }
     }
 
