@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 
+use App\Models\Message;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
@@ -15,7 +16,8 @@ class StoreMessageRequest extends FormRequest
     public function authorize(): bool
     {
         $conversation = $this->route('conversation');
-        return Gate::allows('view', $conversation);
+        Gate::authorize('send', [Message::class, $conversation]);
+        return true;
     }
 
     /**

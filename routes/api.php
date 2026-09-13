@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetController;
 use App\Http\Controllers\API\V1\Auth\RegisterUserController;
 use App\Http\Controllers\API\V1\Auth\SocialAuthController;
+use App\Http\Controllers\API\V1\BlockController;
 use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\ConversationController;
 use App\Http\Controllers\API\V1\FollowController;
@@ -13,7 +14,7 @@ use App\Http\Controllers\API\V1\NotificationsController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\ReplyController;
-use App\Http\Controllers\TypingController;
+use App\Http\Controllers\API\V1\TypingController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
@@ -47,6 +48,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [MessageController::class, 'destroy'])->name('conversations.messages.destroy');
     Route::patch('/conversations/{conversation}/messages/{message}',
         [MessageController::class, 'update'])->name('conversations.messages.update');
+    Route::post('/users/{user}/block', [BlockController::class, 'store'])->name('users.block');
+    Route::delete('/users/{user}/block', [BlockController::class, 'destroy'])->name('users.unblock');
 });
 
 Route::prefix('v1')->group(function () {

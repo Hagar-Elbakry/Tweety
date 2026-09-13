@@ -78,6 +78,16 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'sender_id');
     }
 
+    public function blockedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocker_id', 'blocked_id');
+    }
+
+    public function blockedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocked_id', 'blocker_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
