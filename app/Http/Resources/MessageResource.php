@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class MessageResource extends JsonResource
 {
@@ -18,6 +19,13 @@ class MessageResource extends JsonResource
             'sender_name' => $this->sender->name,
             'sender_avatar' => $this->sender->avatar,
             'body' => $this->body,
+            'attachments' => $this->attachments->map(function ($attachment) {
+                return [
+                    'url' => Storage::url($attachment->path),
+                    'type' => $attachment->type,
+                    'original_name' => $attachment->original_name,
+                ];
+            }),
             'sent_at' => $this->created_at->toIsoString(),
             'read_by' => $this->seenBy->map(function ($read) {
                 return [

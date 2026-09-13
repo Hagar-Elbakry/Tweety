@@ -15,7 +15,7 @@ class PostService
     public function create(array $data, User $user): Post
     {
         if (isset($data['image'])) {
-            $data['image'] = $this->uploadImage($data['image'], 'posts');
+            $data['image'] = $this->uploadFile($data['image'], 'posts');
         }
         $post = $user->posts()->create($data);
 
@@ -28,18 +28,18 @@ class PostService
         $oldImagePath = $post->image;
         try {
             if (isset($data['image'])) {
-                $newImagePath = $this->uploadImage($data['image'], 'posts');
+                $newImagePath = $this->uploadFile($data['image'], 'posts');
                 $data['image'] = $newImagePath;
             }
             $post->update($data);
             if ($newImagePath && $oldImagePath) {
-                $this->deleteImage($oldImagePath);
+                $this->deleteFile($oldImagePath);
             }
 
             return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks']);
         } catch (Exception $e) {
             if ($newImagePath) {
-                $this->deleteImage($newImagePath);
+                $this->deleteFile($newImagePath);
             }
             throw $e;
         }
@@ -51,7 +51,7 @@ class PostService
         if ($post->delete()) {
             if ($imagePath) {
                 try {
-                    $this->deleteImage($imagePath);
+                    $this->deleteFile($imagePath);
                 } catch (Exception $e) {
                     Log::error('Failed to delete image: '.$e->getMessage(), [
                         'stack' => $e->getTraceAsString(),

@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -41,6 +42,13 @@ class MessageSent implements ShouldBroadcast
             'sender_name' => $this->message->sender->name,
             'sender_avatar' => $this->message->sender->avatar,
             'message' => $this->message->body,
+            'attachments' => $this->message->attachments->map(function ($attachment) {
+                return [
+                    'url' => Storage::url($attachment->path),
+                    'type' => $attachment->type,
+                    'original_name' => $attachment->original_name,
+                ];
+            }),
             'sent_at' => $this->message->created_at->toIsoString(),
         ];
     }

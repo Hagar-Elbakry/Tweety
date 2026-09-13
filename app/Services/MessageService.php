@@ -11,11 +11,14 @@ use App\Models\Message;
 use App\Models\MessageDelete;
 use App\Models\MessageRead;
 use App\Models\User;
+use App\Traits\Uploadable;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class MessageService
 {
+    use Uploadable;
+
     public function __construct(
         protected ConversationService $conversationService,
     ) {
@@ -27,7 +30,7 @@ class MessageService
             ->whereDoesntHave('deletedFor', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with(['sender', 'seenBy.user'])->paginate(10);
+            ->with(['sender', 'attachments', 'seenBy.user'])->paginate(10);
         $seenAt = Carbon::now();
         $anyNewlyRead = false;
         $messages->each(function ($message) use ($user, $conversation, &$seenAt, &$anyNewlyRead) {
@@ -47,13 +50,23 @@ class MessageService
         return $messages;
     }
 
-    public function sendMessage(Conversation $conversation, string $body, User $user): Message
+    public function sendMessage(Conversation $conversation, ?string $body, ?array $attachments, User $user): Message
     {
         $message = $conversation->messages()->create([
             'body' => $body,
             'sender_id' => $user->id
         ]);
-        $message->load('sender');
+        if ($attachments) {
+            foreach ($attachments as $attachment) {
+                $filePath = $this->uploadFile($attachment, 'messages');
+                $message->attachments()->create([
+                    'path' => $filePath,
+                    'original_name' => $attachment->getClientOriginalName(),
+                    'type' => $attachment->getClientMimeType(),
+                ]);
+            }
+        }
+        $message->load(['sender', 'attachments']);
         $recipient = $message->conversation->users()->where('users.id', '!=', $user->id)->first();
         $unreadCount = $this->conversationService->getUnreadCount($recipient);
         broadcast(new MessageSent($message))->toOthers();

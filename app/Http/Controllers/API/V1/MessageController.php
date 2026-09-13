@@ -38,7 +38,7 @@ class MessageController extends Controller
     public function store(StoreMessageRequest $request, Conversation $conversation): JsonResponse
     {
         try {
-            $message = $this->messageService->sendMessage($conversation, $request->validated('body'), $request->user());
+            $message = $this->messageService->sendMessage($conversation, $request->validated('body'), $request->validated('attachments'), $request->user());
             return ApiResponse::success(message: 'Message sent', data: new MessageResource($message));
         } catch (Exception $e) {
             Log::error('Failed to send message: '.$e->getMessage());

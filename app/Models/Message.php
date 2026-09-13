@@ -33,4 +33,9 @@ class Message extends Model
     {
         return $this->hasMany(MessageDelete::class);
     }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(MessageAttachment::class);
+    }
 }
