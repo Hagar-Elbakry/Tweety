@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeleteMessageRequest;
 use App\Http\Requests\GetConversationMessageRequest;
 use App\Http\Requests\StoreMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Services\MessageService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -40,6 +42,17 @@ class MessageController extends Controller
         } catch (Exception $e) {
             Log::error('Failed to send message: '.$e->getMessage());
             return ApiResponse::error(message: 'Failed to send message');
+        }
+    }
+
+    public function destroy(DeleteMessageRequest $request, Conversation $conversation, Message $message): JsonResponse
+    {
+        try {
+            $this->messageService->deleteForUser($message, $request->user());
+            return ApiResponse::success(message: 'Message deleted successfully');
+        } catch (Exception $e) {
+            Log::error('Failed to delete message: '.$e->getMessage());
+            return ApiResponse::error(message: 'Failed to delete message');
         }
     }
 }

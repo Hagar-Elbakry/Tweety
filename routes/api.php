@@ -41,6 +41,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [MessageController::class, 'index'])->name('conversations.messages.index');
     Route::post('/conversations/{conversation}/messages',
         [MessageController::class, 'store'])->name('conversations.messages.store');
+    Route::delete('/conversations/{conversation}/messages/{message}',
+        [MessageController::class, 'destroy'])->name('conversations.messages.destroy');
 });
 
 Route::prefix('v1')->group(function () {

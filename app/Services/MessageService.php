@@ -7,6 +7,7 @@ use App\Events\MessageSent;
 use App\Events\MessagesRead;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\MessageDelete;
 use App\Models\MessageRead;
 use App\Models\User;
 use Carbon\Carbon;
@@ -21,7 +22,11 @@ class MessageService
 
     public function getMessagesForConversation(Conversation $conversation, User $user): LengthAwarePaginator
     {
-        $messages = $conversation->messages()->with(['sender', 'seenBy.user'])->paginate(10);
+        $messages = $conversation->messages()
+            ->whereDoesntHave('deletedFor', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['sender', 'seenBy.user'])->paginate(10);
         $seenAt = Carbon::now();
         $anyNewlyRead = false;
         $messages->each(function ($message) use ($user, $conversation, &$seenAt, &$anyNewlyRead) {
@@ -53,5 +58,16 @@ class MessageService
         broadcast(new MessageSent($message))->toOthers();
         broadcast(new ConversationUpdated($message, $unreadCount));
         return $message;
+    }
+
+    public function deleteForUser(Message $message, User $user): void
+    {
+        $isDeleted = MessageDelete::where('message_id', $message->id)->where('user_id', $user->id)->exists();
+        if (!$isDeleted) {
+            MessageDelete::create([
+                'message_id' => $message->id,
+                'user_id' => $user->id
+            ]);
+        }
     }
 }

@@ -28,4 +28,9 @@ class Message extends Model
     {
         return $this->hasMany(MessageRead::class);
     }
+
+    public function deletedFor(): HasMany
+    {
+        return $this->hasMany(MessageDelete::class);
+    }
 }
