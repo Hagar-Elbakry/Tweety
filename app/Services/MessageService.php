@@ -14,6 +14,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MessageService
 {
+    public function __construct(
+        protected ConversationService $conversationService,
+    ) {
+    }
+
     public function getMessagesForConversation(Conversation $conversation, User $user): LengthAwarePaginator
     {
         $messages = $conversation->messages()->with(['sender', 'seenBy.user'])->paginate(10);
@@ -43,8 +48,10 @@ class MessageService
             'sender_id' => $user->id
         ]);
         $message->load('sender');
+        $recipient = $message->conversation->users()->where('users.id', '!=', $user->id)->first();
+        $unreadCount = $this->conversationService->getUnreadCount($recipient);
         broadcast(new MessageSent($message))->toOthers();
-        broadcast(new ConversationUpdated($message));
+        broadcast(new ConversationUpdated($message, $unreadCount));
         return $message;
     }
 }

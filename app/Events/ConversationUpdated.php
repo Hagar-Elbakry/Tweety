@@ -19,6 +19,7 @@ class ConversationUpdated implements ShouldBroadcast
      */
     public function __construct(
         protected Message $message,
+        protected int $unreadMessageCount,
     ) {
     }
 
@@ -48,6 +49,7 @@ class ConversationUpdated implements ShouldBroadcast
             'body' => $this->message->body,
             'sent_at' => $this->message->created_at->toIsoString(),
             'is_read' => false,
+            'unread_message_count' => $this->unreadMessageCount,
         ];
     }
 }
