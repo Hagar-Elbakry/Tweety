@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Storage;
 
 trait Uploadable
 {
-    public function uploadImage(UploadedFile $file, ?string $folder = null, string $disk = 'public'): string
+    public function uploadFile(UploadedFile $file, ?string $folder = null, string $disk = 'public'): string
     {
         return $file->store($folder, $disk);
     }
 
-    public function deleteImage(string $path, string $disk = 'public'): void
+    public function deleteFile(string $path, string $disk = 'public'): void
     {
         Storage::disk($disk)->delete($path);
     }
