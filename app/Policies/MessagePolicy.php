@@ -12,7 +12,7 @@ class MessagePolicy
     public function send(User $user, Conversation $conversation): bool
     {
         $otherUser = $conversation->users()->where('users.id', '!=', $user->id)->first();
-        
+
         return $conversation->users()->where('users.id', $user->id)->exists()
             && $otherUser->blockedUsers()->where('blocked_id', $user->id)->doesntExist()
             && $user->blockedUsers()->where('blocked_id', $otherUser->id)->doesntExist();

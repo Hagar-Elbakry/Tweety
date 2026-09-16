@@ -13,5 +13,4 @@ class BlockRequest extends FormRequest
     {
         return $this->user()->id != $this->route('user')->id;
     }
-
 }

@@ -20,9 +20,7 @@ class ConversationUpdated implements ShouldBroadcast
     public function __construct(
         protected Message $message,
         protected int $unreadMessageCount,
-    ) {
-    }
-
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -33,6 +31,7 @@ class ConversationUpdated implements ShouldBroadcast
     {
         $recipientId = $this->message->conversation->users()->where('user_id', '!=',
             $this->message->sender_id)->first()->id;
+
         return [
             new PrivateChannel('new-message.'.$recipientId),
         ];

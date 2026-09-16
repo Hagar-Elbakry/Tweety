@@ -21,8 +21,7 @@ class MessageService
 
     public function __construct(
         protected ConversationService $conversationService,
-    ) {
-    }
+    ) {}
 
     public function getMessagesForConversation(Conversation $conversation, User $user): LengthAwarePaginator
     {
@@ -33,12 +32,12 @@ class MessageService
             ->with(['sender', 'attachments', 'seenBy.user'])->paginate(10);
         $seenAt = Carbon::now();
         $anyNewlyRead = false;
-        $messages->each(function ($message) use ($user, $conversation, &$seenAt, &$anyNewlyRead) {
-            if (!$message->seenBy->contains('user_id', $user->id) && $message->sender_id != $user->id) {
+        $messages->each(function ($message) use ($user, &$seenAt, &$anyNewlyRead) {
+            if (! $message->seenBy->contains('user_id', $user->id) && $message->sender_id != $user->id) {
                 MessageRead::create([
                     'message_id' => $message->id,
                     'user_id' => $user->id,
-                    'seen_at' => $seenAt
+                    'seen_at' => $seenAt,
                 ]);
                 $anyNewlyRead = true;
             }
@@ -47,6 +46,7 @@ class MessageService
             broadcast(new MessagesRead($conversation, $user, $seenAt))->toOthers();
         }
         $conversation->users()->updateExistingPivot($user->id, ['read_at' => now()]);
+
         return $messages;
     }
 
@@ -54,7 +54,7 @@ class MessageService
     {
         $message = $conversation->messages()->create([
             'body' => $body,
-            'sender_id' => $user->id
+            'sender_id' => $user->id,
         ]);
         if ($attachments) {
             foreach ($attachments as $attachment) {
@@ -71,6 +71,7 @@ class MessageService
         $unreadCount = $this->conversationService->getUnreadCount($recipient);
         broadcast(new MessageSent($message))->toOthers();
         broadcast(new ConversationUpdated($message, $unreadCount));
+
         return $message;
     }
 
@@ -78,16 +79,17 @@ class MessageService
     {
         $message->update(['body' => $body]);
         broadcast(new MessageUpdated($message))->toOthers();
+
         return $message;
     }
 
     public function deleteForUser(Message $message, User $user): void
     {
         $isDeleted = MessageDelete::where('message_id', $message->id)->where('user_id', $user->id)->exists();
-        if (!$isDeleted) {
+        if (! $isDeleted) {
             MessageDelete::create([
                 'message_id' => $message->id,
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ]);
         }
     }

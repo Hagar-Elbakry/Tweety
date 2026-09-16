@@ -13,6 +13,7 @@ class GetConversationMessageRequest extends FormRequest
     public function authorize(): bool
     {
         $conversation = $this->route('conversation');
+
         return Gate::allows('view', $conversation);
     }
 }

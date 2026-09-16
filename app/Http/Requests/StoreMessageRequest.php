@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-
 use App\Models\Message;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,6 +16,7 @@ class StoreMessageRequest extends FormRequest
     {
         $conversation = $this->route('conversation');
         Gate::authorize('send', [Message::class, $conversation]);
+
         return true;
     }
 

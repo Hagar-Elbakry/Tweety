@@ -19,8 +19,7 @@ class MessageUpdated implements ShouldBroadcast
      */
     public function __construct(
         protected Message $message,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.

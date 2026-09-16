@@ -13,6 +13,7 @@ class TypingController extends Controller
     public function __invoke(TypingRequest $request, Conversation $conversation)
     {
         broadcast(new UserTyping($conversation, $request->user()))->toOthers();
+
         return ApiResponse::success(message: 'Typing event broadcasted.');
     }
 }

@@ -46,8 +46,8 @@ it('prevents a blocked user from sending messages', function () {
     $this->actingAs($this->user1, 'sanctum')->postJson(route('users.block', $this->user2->id));
     $response = $this->actingAs($this->user2, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-        'body' => 'Test message',
-    ]);
+            'body' => 'Test message',
+        ]);
     $response->assertStatus(403);
 });
 
@@ -55,7 +55,7 @@ it('prevents the blocker from sending messages to the blocked user', function ()
     $this->actingAs($this->user1, 'sanctum')->postJson(route('users.block', $this->user2->id));
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-        'body' => 'Test message',
-    ]);
+            'body' => 'Test message',
+        ]);
     $response->assertStatus(403);
 });

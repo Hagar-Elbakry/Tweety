@@ -11,7 +11,7 @@ class Message extends Model
     protected $fillable = [
         'conversation_id',
         'sender_id',
-        'body'
+        'body',
     ];
 
     public function conversation(): BelongsTo

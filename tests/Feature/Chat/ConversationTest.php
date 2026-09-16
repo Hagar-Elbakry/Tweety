@@ -28,7 +28,7 @@ beforeEach(function () {
 
 it('finds an existing conversation between two users instead of creating a duplicate', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.store'), [
-        'recipient_id' => $this->user2->id
+        'recipient_id' => $this->user2->id,
     ]);
     $response->assertStatus(200);
     $this->assertDatabaseCount('conversations', 2);
@@ -37,7 +37,7 @@ it('finds an existing conversation between two users instead of creating a dupli
 it('creates a new conversation if non exists', function () {
     $user = User::factory()->create();
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.store'), [
-        'recipient_id' => $user->id
+        'recipient_id' => $user->id,
     ]);
     $response->assertStatus(200);
     $this->assertDatabaseCount('conversations', 3);
@@ -45,7 +45,7 @@ it('creates a new conversation if non exists', function () {
 
 it('rejects creating a conversation with yourself', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.store'), [
-        'recipient_id' => $this->user1->id
+        'recipient_id' => $this->user1->id,
     ]);
     $response->assertStatus(422);
     $this->assertDatabaseCount('conversations', 2);
@@ -79,7 +79,7 @@ it('lists conversations with the other participant and last message preview', fu
                     'sent_at' => $this->messageForConversation2->created_at->toIsoString(),
                 ],
                 'is_read' => false,
-            ]
-        ]
+            ],
+        ],
     ]);
 });

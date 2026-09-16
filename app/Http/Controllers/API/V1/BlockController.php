@@ -19,22 +19,26 @@ class BlockController extends Controller
 
     public function store(BlockRequest $request, User $user): JsonResponse
     {
-        try{
+        try {
             $this->blockService->block($request->user(), $user);
+
             return ApiResponse::success(message: 'User blocked successfully.');
-        } catch(Exception $e) {
-            Log::error('Error blocking user: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Error blocking user: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to block user.', status: 500);
         }
     }
 
     public function destroy(BlockRequest $request, User $user): JsonResponse
     {
-        try{
+        try {
             $this->blockService->unblock($request->user(), $user);
+
             return ApiResponse::success(message: 'User unblocked successfully.');
         } catch (Exception $e) {
-            Log::error('Error unblocking user: ' . $e->getMessage());
+            Log::error('Error unblocking user: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to unblock user.', status: 500);
         }
     }

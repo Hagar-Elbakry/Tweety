@@ -13,6 +13,7 @@ class MessageDelete extends Model
     {
         return $this->belongsTo(Message::class);
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

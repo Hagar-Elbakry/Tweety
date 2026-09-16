@@ -30,7 +30,7 @@ class Conversation extends Model
 
     public function isReadFor(User $user): bool
     {
-        if (!$this->lastMessage) {
+        if (! $this->lastMessage) {
             return true;
         }
 
@@ -40,7 +40,7 @@ class Conversation extends Model
             ?->pivot
             ->read_at;
 
-        if (!$readAt) {
+        if (! $readAt) {
             return false;
         }
 

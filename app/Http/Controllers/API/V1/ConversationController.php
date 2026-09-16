@@ -17,17 +17,18 @@ class ConversationController extends Controller
 {
     public function __construct(
         protected ConversationService $conversationService,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
         try {
             $conversations = $this->conversationService->getUserConversations($request->user());
+
             return ApiResponse::success(message: 'Conversations retrieved successfully',
                 data: ConversationResource::collection($conversations));
         } catch (Exception $e) {
             Log::error('Failed to retrieve messages: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to retrieve messages.');
         }
     }
@@ -37,10 +38,12 @@ class ConversationController extends Controller
         try {
             $recipient = User::find($request->recipient_id);
             $conversation = $this->conversationService->findOrCreateBetween($request->user(), $recipient);
+
             return ApiResponse::success(message: 'Conversation created successfully',
                 data: ['conversation_id' => $conversation->id]);
         } catch (Exception $e) {
             Log::error('Failed to create conversation: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to create conversation');
         }
     }
@@ -49,9 +52,11 @@ class ConversationController extends Controller
     {
         try {
             $count = $this->conversationService->getUnreadCount($request->user());
+
             return ApiResponse::success(data: ['unread_count' => $count]);
         } catch (Exception $e) {
             Log::error('Failed to get unread count: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to get unread count');
         }
     }

@@ -23,8 +23,7 @@ class MessagesRead implements ShouldBroadcast
         protected Conversation $conversation,
         protected User $user,
         protected Carbon $seenAt
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.

@@ -20,17 +20,18 @@ class MessageController extends Controller
 {
     public function __construct(
         protected MessageService $messageService,
-    ) {
-    }
+    ) {}
 
     public function index(GetConversationMessageRequest $request, Conversation $conversation): JsonResponse
     {
         try {
             $messages = $this->messageService->getMessagesForConversation($conversation, $request->user());
+
             return ApiResponse::success(message: 'Messages retrieved successfully',
                 data: MessageResource::collection($messages));
         } catch (Exception $e) {
             Log::error('Failed to retrieve messages: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to retrieve messages');
         }
     }
@@ -39,9 +40,11 @@ class MessageController extends Controller
     {
         try {
             $message = $this->messageService->sendMessage($conversation, $request->validated('body'), $request->validated('attachments'), $request->user());
+
             return ApiResponse::success(message: 'Message sent', data: new MessageResource($message));
         } catch (Exception $e) {
             Log::error('Failed to send message: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to send message');
         }
     }
@@ -50,9 +53,11 @@ class MessageController extends Controller
     {
         try {
             $message = $this->messageService->updateMessage($message, $request->validated('body'));
+
             return ApiResponse::success(message: 'Message updated successfully', data: new MessageResource($message));
         } catch (Exception $e) {
             Log::error('Failed to update message: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to update message');
         }
     }
@@ -61,9 +66,11 @@ class MessageController extends Controller
     {
         try {
             $this->messageService->deleteForUser($message, $request->user());
+
             return ApiResponse::success(message: 'Message deleted successfully');
         } catch (Exception $e) {
             Log::error('Failed to delete message: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to delete message');
         }
     }

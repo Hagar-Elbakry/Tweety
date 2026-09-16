@@ -15,6 +15,7 @@ class ConversationResource extends JsonResource
     public function toArray(Request $request): array
     {
         $otherUser = $this->users->firstWhere('id', '!=', $request->user()->id);
+
         return [
             'id' => $this->id,
             'other_user' => $otherUser ? [

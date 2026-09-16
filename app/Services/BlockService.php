@@ -9,7 +9,7 @@ class BlockService
     public function block(User $blocker, User $blocked): void
     {
         $isBlocked = $blocker->blockedUsers()->where('blocked_id', $blocked->id)->exists();
-        if (!$isBlocked) {
+        if (! $isBlocked) {
             $blocker->blockedUsers()->attach($blocked->id);
         }
     }

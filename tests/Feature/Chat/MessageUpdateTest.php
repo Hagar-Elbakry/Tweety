@@ -23,8 +23,8 @@ beforeEach(function () {
 it('allows the sender to update an unread message', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->patchJson(route('conversations.messages.update',
         [$this->conversation->id, $this->message->id]), [
-        'body' => 'updated message',
-    ]);
+            'body' => 'updated message',
+        ]);
     $response->assertStatus(200);
     $response->assertJsonStructure([
         'data' => [
@@ -35,8 +35,8 @@ it('allows the sender to update an unread message', function () {
                 '*' => [
                     'url',
                     'type',
-                    'original_name'
-                ]
+                    'original_name',
+                ],
             ],
             'sent_at',
             'read_by' => [
@@ -44,10 +44,10 @@ it('allows the sender to update an unread message', function () {
                     'name',
                     'avatar',
                     'seen_at',
-                ]
+                ],
             ],
-            'is_mine'
-        ]
+            'is_mine',
+        ],
     ]);
     $this->assertDatabaseHas('messages', [
         'id' => $this->message->id,
@@ -58,8 +58,8 @@ it('allows the sender to update an unread message', function () {
 it('rejects updating a message sent by another user', function () {
     $response = $this->actingAs($this->user2, 'sanctum')->patchJson(route('conversations.messages.update',
         [$this->conversation->id, $this->message->id]), [
-        'body' => 'updated message',
-    ]);
+            'body' => 'updated message',
+        ]);
     $response->assertStatus(403);
 });
 
@@ -72,8 +72,8 @@ it('rejects updating a message that has already been seen', function () {
 
     $response = $this->actingAs($this->user1, 'sanctum')->patchJson(route('conversations.messages.update',
         [$this->conversation->id, $this->message->id]), [
-        'body' => 'updated message',
-    ]);
+            'body' => 'updated message',
+        ]);
     $response->assertStatus(403);
 });
 
@@ -81,7 +81,7 @@ it('broadcasts MessageUpdated when a message is updated', function () {
     Event::fake();
     $this->actingAs($this->user1, 'sanctum')->patchJson(route('conversations.messages.update',
         [$this->conversation->id, $this->message->id]), [
-        'body' => 'updated message',
-    ]);
+            'body' => 'updated message',
+        ]);
     Event::assertDispatched(MessageUpdated::class);
 });

@@ -21,8 +21,7 @@ class UserTyping implements ShouldBroadcast
     public function __construct(
         protected Conversation $conversation,
         protected User $user
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -32,14 +31,14 @@ class UserTyping implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation.'.$this->conversation->id)
+            new PrivateChannel('conversation.'.$this->conversation->id),
         ];
     }
 
     public function broadcastWith(): array
     {
-        return   [
-            'name' => $this->user->name
+        return [
+            'name' => $this->user->name,
         ];
     }
 }

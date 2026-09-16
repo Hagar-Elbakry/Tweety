@@ -10,7 +10,7 @@ class MessageRead extends Model
     protected $fillable = [
         'message_id',
         'user_id',
-        'seen_at'
+        'seen_at',
     ];
 
     protected $casts = [
@@ -23,6 +23,7 @@ class MessageRead extends Model
     {
         return $this->belongsTo(Message::class);
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

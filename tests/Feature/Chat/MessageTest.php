@@ -16,8 +16,8 @@ beforeEach(function () {
 it('allows a participant to send a message', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-        'body' => 'Hello, this is a test message.',
-    ]);
+            'body' => 'Hello, this is a test message.',
+        ]);
     $response->assertStatus(200);
     $response->assertJsonStructure([
         'data' => [
@@ -28,8 +28,8 @@ it('allows a participant to send a message', function () {
                 '*' => [
                     'url',
                     'type',
-                    'original_name'
-                ]
+                    'original_name',
+                ],
             ],
             'sent_at',
             'read_by' => [
@@ -37,10 +37,10 @@ it('allows a participant to send a message', function () {
                     'name',
                     'avatar',
                     'seen_at',
-                ]
+                ],
             ],
-            'is_mine'
-        ]
+            'is_mine',
+        ],
     ]);
 
     $this->assertDatabaseHas('messages', [
@@ -54,8 +54,8 @@ it('rejects sending a message from a non-participant', function () {
     $otherUser = User::factory()->create();
     $response = $this->actingAs($otherUser, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-        'body' => 'Hello, this is a test message.',
-    ]);
+            'body' => 'Hello, this is a test message.',
+        ]);
     $response->assertStatus(403);
 });
 
@@ -64,7 +64,7 @@ it('requires body or attachments', function () {
         $this->conversation->id));
     $response->assertStatus(422);
     $response->assertJsonStructure([
-        'data' => ['body', 'attachments']
+        'data' => ['body', 'attachments'],
     ]);
 });
 
@@ -72,7 +72,7 @@ it('broadcasts MessageSent when a message is sent', function () {
     Event::fake();
     $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-        'body' => 'Hello, this is a test message.',
-    ]);
+            'body' => 'Hello, this is a test message.',
+        ]);
     Event::assertDispatched(MessageSent::class);
 });
