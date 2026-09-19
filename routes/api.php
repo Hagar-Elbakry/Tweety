@@ -14,6 +14,7 @@ use App\Http\Controllers\API\V1\NotificationsController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\ReplyController;
+use App\Http\Controllers\API\V1\RepostController;
 use App\Http\Controllers\API\V1\TypingController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
@@ -51,6 +52,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [MessageController::class, 'update'])->name('conversations.messages.update');
     Route::post('/users/{user}/block', [BlockController::class, 'store'])->name('users.block');
     Route::delete('/users/{user}/block', [BlockController::class, 'destroy'])->name('users.unblock');
+    Route::post('/posts/{post}/repost', [RepostController::class, 'store'])->name('repost.store');
+    Route::delete('/posts/{post}/repost', [RepostController::class, 'destroy'])->name('repost.destroy');
+    Route::post('/posts/{post}/quote', [RepostController::class, 'quote'])->name('repost.quote');
 });
 
 Route::prefix('v1')->group(function () {

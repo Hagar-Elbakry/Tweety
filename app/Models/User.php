@@ -88,6 +88,11 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'user_blocks', 'blocked_id', 'blocker_id');
     }
 
+    public function reposts(): HasMany
+    {
+        return  $this->hasMany(PostRepost::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
