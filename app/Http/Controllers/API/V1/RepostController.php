@@ -28,4 +28,16 @@ class RepostController extends Controller
             return ApiResponse::error(message: 'Failed to repost post', status: 500);
         }
     }
+
+    public function destroy(Request $request, Post $post): JsonResponse
+    {
+        try {
+            $this->repostService->unrepost($request->user(), $post);
+            return ApiResponse::success(message: 'Repost deleted successfully');
+        } catch (Exception $e) {
+            Log::error('Failed to delete repost'.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to delete repost', status: 500);
+        }
+    }
 }

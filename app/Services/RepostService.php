@@ -9,13 +9,18 @@ class RepostService
 {
     public function repost(User $user, Post $post): void
     {
-        $isRepost = $user->reposts()->where('post_id', $post->id)->where('type', 'repost')->exists();
+        $isReposted = $user->reposts()->where('post_id', $post->id)->where('type', 'repost')->exists();
 
-        if (!$isRepost) {
+        if (!$isReposted) {
             $user->reposts()->create([
                 'post_id' => $post->id,
                 'type' => 'repost'
             ]);
         }
+    }
+
+    public function unrepost(User $user, Post $post): void
+    {
+        $user->reposts()->where('post_id', $post->id)->where('type', 'repost')->delete();
     }
 }
