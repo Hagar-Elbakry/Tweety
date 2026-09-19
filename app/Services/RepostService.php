@@ -23,4 +23,13 @@ class RepostService
     {
         $user->reposts()->where('post_id', $post->id)->where('type', 'repost')->delete();
     }
+
+    public function quote(User $user, Post $post, string $comment): void
+    {
+        $user->reposts()->create([
+            'post_id' => $post->id,
+            'type' => 'quote',
+            'comment' => $comment
+        ]);
+    }
 }

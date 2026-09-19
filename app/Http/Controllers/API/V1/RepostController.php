@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\QuoteRepostRequest;
 use App\Models\Post;
+use App\Models\User;
 use App\Services\RepostService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -38,6 +40,17 @@ class RepostController extends Controller
             Log::error('Failed to delete repost'.$e->getMessage());
 
             return ApiResponse::error(message: 'Failed to delete repost', status: 500);
+        }
+    }
+
+    public function quote(QuoteRepostRequest $request, Post $post): JsonResponse
+    {
+        try{
+            $this->repostService->quote($request->user(), $post, $request->validated('comment'));
+            return ApiResponse::success(message: 'Quote reposted successfully');
+        } catch (Exception $e) {
+            Log::error('Failed to repost quote'.$e->getMessage());
+            return ApiResponse::error(message: 'Failed to repost quote', status: 500);
         }
     }
 }
