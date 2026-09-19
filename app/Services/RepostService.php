@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\NewRepostNotification;
 
 class RepostService
 {
@@ -16,6 +17,10 @@ class RepostService
                 'post_id' => $post->id,
                 'type' => 'repost'
             ]);
+
+            if ($post->user->id != $user->id) {
+                $post->user->notify(new NewRepostNotification($user, $post, 'repost'));
+            }
         }
     }
 
@@ -31,5 +36,9 @@ class RepostService
             'type' => 'quote',
             'comment' => $comment
         ]);
+
+        if ($post->user->id != $user->id) {
+            $post->user->notify(new NewRepostNotification($user, $post, 'quote'));
+        }
     }
 }

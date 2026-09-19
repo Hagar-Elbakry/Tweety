@@ -21,3 +21,7 @@ Broadcast::channel('conversation.{conversationId}', function ($user, $conversati
 Broadcast::channel('new-message.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
+
+Broadcast::channel('repost.{userId}', function ($user, $userId) {
+    return $user->id === (int) $userId;
+});
