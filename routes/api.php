@@ -8,6 +8,7 @@ use App\Http\Controllers\API\V1\Auth\SocialAuthController;
 use App\Http\Controllers\API\V1\BlockController;
 use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\ConversationController;
+use App\Http\Controllers\API\V1\FeedController;
 use App\Http\Controllers\API\V1\FollowController;
 use App\Http\Controllers\API\V1\MessageController;
 use App\Http\Controllers\API\V1\NotificationsController;
@@ -57,6 +58,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}/repost', [RepostController::class, 'destroy'])->name('repost.destroy');
     Route::post('/posts/{post}/quote', [RepostController::class, 'quote'])->name('repost.quote');
     Route::get('/users/search', [SearchController::class, 'users'])->name('search.users');
+    Route::get('/feed', [FeedController::class, 'index'])->name('feed');
 });
 
 Route::prefix('v1')->group(function () {
