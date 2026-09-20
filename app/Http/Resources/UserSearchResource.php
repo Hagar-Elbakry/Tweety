@@ -18,7 +18,7 @@ class UserSearchResource extends JsonResource
             'name' => $this->name,
             'user_name' => $this->username,
             'avatar' => $this->avatar,
-            'is_following' => $request->user()->isFollowing($this->resource)
+            'is_following' => $request->user()->isFollowing($this->resource),
         ];
     }
 }

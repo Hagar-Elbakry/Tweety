@@ -4,15 +4,15 @@ use App\Models\User;
 
 beforeEach(function () {
     $this->user1 = User::factory()->create([
-        'name' => 'Hagar Elbakry'
+        'name' => 'Hagar Elbakry',
     ]);
 
     $this->user2 = User::factory()->create([
-        'username' => 'seifAhmed'
+        'username' => 'seifAhmed',
     ]);
 
     $this->user3 = User::factory()->create([
-        'name' => 'Hagar'
+        'name' => 'Hagar',
     ]);
 });
 
@@ -26,9 +26,9 @@ it('finds users whose name starts with the query', function () {
                 'name',
                 'user_name',
                 'avatar',
-                'is_following'
-            ]
-        ]
+                'is_following',
+            ],
+        ],
     ]);
 });
 
@@ -42,9 +42,9 @@ it('finds users whose username starts with the query', function () {
                 'name',
                 'user_name',
                 'avatar',
-                'is_following'
-            ]
-        ]
+                'is_following',
+            ],
+        ],
     ]);
 });
 
@@ -53,7 +53,7 @@ it('does not return users whose name matches in the middle', function () {
 
     $response->assertStatus(200);
     $response->assertJson([
-        'message' => 'No users found matching your search'
+        'message' => 'No users found matching your search',
     ]);
 });
 

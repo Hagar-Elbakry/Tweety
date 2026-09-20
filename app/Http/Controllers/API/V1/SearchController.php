@@ -15,8 +15,7 @@ class SearchController extends Controller
 {
     public function __construct(
         protected SearchService $searchService
-    ) {
-    }
+    ) {}
 
     public function users(SearchUserRequest $request): JsonResponse
     {
@@ -25,10 +24,12 @@ class SearchController extends Controller
             if ($users->isEmpty()) {
                 return ApiResponse::success(message: 'No users found matching your search');
             }
+
             return ApiResponse::success(message: 'Found users successfully',
                 data: UserSearchResource::collection($users));
         } catch (Exception $e) {
             Log::error('Failed to search'.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to search', status: 500);
         }
     }
