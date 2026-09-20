@@ -23,6 +23,7 @@ class PostResource extends JsonResource
             'likes_count' => $this->likes_count,
             'bookmark_count' => $this->bookmarks_count,
             'comments_count' => $this->comments_count,
+            'reposts_count' => $this->reposts_count,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'user' => new UserResource($this->whenLoaded('user')),
