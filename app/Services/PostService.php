@@ -19,7 +19,7 @@ class PostService
         }
         $post = $user->posts()->create($data);
 
-        return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks']);
+        return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks', 'reposts']);
     }
 
     public function update(array $data, Post $post): Post
@@ -36,7 +36,7 @@ class PostService
                 $this->deleteFile($oldImagePath);
             }
 
-            return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks']);
+            return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks', 'reposts']);
         } catch (Exception $e) {
             if ($newImagePath) {
                 $this->deleteFile($newImagePath);
