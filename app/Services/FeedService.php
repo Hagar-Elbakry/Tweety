@@ -12,14 +12,14 @@ class FeedService
     {
         $userIds = $user->following()->pluck('users.id')->push($user->id);
         $posts = Post::whereIn('user_id', $userIds)->withCount([
-            'comments', 'likes', 'bookmarks', 'reposts'
+            'comments', 'likes', 'bookmarks', 'reposts',
         ])->with('user')->get();
         $reposts = PostRepost::whereIn('user_id', $userIds)
             ->with(['user', 'post.user'])
             ->with([
                 'post' => function ($query) {
                     $query->withCount(['comments', 'likes', 'bookmarks', 'reposts']);
-                }
+                },
             ])
             ->get();
 
