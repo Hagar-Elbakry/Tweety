@@ -15,6 +15,7 @@ use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\ReplyController;
 use App\Http\Controllers\API\V1\RepostController;
+use App\Http\Controllers\API\V1\SearchController;
 use App\Http\Controllers\API\V1\TypingController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
@@ -55,6 +56,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/repost', [RepostController::class, 'store'])->name('repost.store');
     Route::delete('/posts/{post}/repost', [RepostController::class, 'destroy'])->name('repost.destroy');
     Route::post('/posts/{post}/quote', [RepostController::class, 'quote'])->name('repost.quote');
+    Route::get('/users/search', [SearchController::class, 'users'])->name('search.users');
 });
 
 Route::prefix('v1')->group(function () {
