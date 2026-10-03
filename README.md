@@ -45,7 +45,7 @@ The API supports common conversations around posts: users can like or bookmark a
 
    ```powershell
    git clone https://github.com/Hagar-Elbakry/Tweety.git
-  cd Tweety
+   cd Tweety
    ```
 
 2. Start MySQL from XAMPP and create two empty databases: `tweety` for the application and `tweety_test` for tests.
@@ -61,9 +61,9 @@ The API supports common conversations around posts: users can like or bookmark a
 4. Install the PHP dependencies, generate the application key, and run the database migrations:
 
    ```powershell
-  composer install
-  php artisan key:generate
-  php artisan migrate
+   composer install
+   php artisan key:generate
+   php artisan migrate
    ```
 
 5. Create the public storage link when using post images or user files:
@@ -75,16 +75,16 @@ The API supports common conversations around posts: users can like or bookmark a
 6. Start the application:
 
    ```powershell
-  php artisan serve
+   php artisan serve
    ```
 
-  The application is usually available at `http://127.0.0.1:8000`, and the API base URL is `http://127.0.0.1:8000/api/v1`.
+   The application is usually available at `http://127.0.0.1:8000`, and the API base URL is `http://127.0.0.1:8000/api/v1`.
 
-  If you need to process queued jobs, open another terminal and run:
+   If you need to process queued jobs, open another terminal and run:
 
-  ```powershell
-  php artisan queue:listen
-  ```
+      ```powershell
+      php artisan queue:listen
+      ```
 
 
 ## Optional Service Configuration
@@ -203,7 +203,7 @@ tests/
   Feature/ Unit/    Feature and unit tests
 ```
 
-## Documentation and Contributing
+## Documentation
 
 Scramble is included as a project dependency for generating API documentation. You can also inspect the registered API routes and their names with:
 
