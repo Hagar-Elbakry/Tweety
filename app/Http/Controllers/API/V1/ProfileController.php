@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
@@ -69,6 +70,21 @@ class ProfileController extends Controller
             ]);
 
             return ApiResponse::error(message: 'Failed to update profile, please try again later.', status: 500);
+        }
+    }
+
+    public function destroy(DeleteAccountRequest $request): JsonResponse
+    {
+        try {
+            $this->profileService->delete($request->user());
+
+            return ApiResponse::success(message: 'Account deleted successfully.');
+        } catch (Exception $e) {
+            Log::error('Error deleting account: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return ApiResponse::error(message: 'Failed to delete account, please try again later.', status: 500);
         }
     }
 }

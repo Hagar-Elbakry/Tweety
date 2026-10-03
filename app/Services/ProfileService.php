@@ -63,4 +63,10 @@ class ProfileService
             throw $e;
         }
     }
+
+    public function delete(User $user): void
+    {
+        $user->currentAccessToken()->delete();
+        $user->delete();
+    }
 }
