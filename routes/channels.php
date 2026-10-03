@@ -25,3 +25,7 @@ Broadcast::channel('new-message.{userId}', function ($user, $userId) {
 Broadcast::channel('repost.{userId}', function ($user, $userId) {
     return $user->id === (int) $userId;
 });
+
+Broadcast::channel('notification-count.{userId}', function ($user, $userId) {
+    return $user->id === (int) $userId;
+});

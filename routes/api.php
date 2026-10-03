@@ -38,7 +38,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         ->only(['index', 'store', 'destroy']);
     Route::get('comments/{comment}/replies', ReplyController::class)->name('comments.replies.index');
     Route::post('/follow', FollowController::class)->name('follow');
-    Route::get('/notifications', NotificationsController::class)->name('notifications');
+    Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications');
+    Route::get('/notifications/unread-count',
+        [NotificationsController::class, 'unreadCount'])->name('notifications.unreadCount');
     Route::post('/conversations', [ConversationController::class, 'store'])->name('conversations.store');
     Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('/conversations/unread-count',

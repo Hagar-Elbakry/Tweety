@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class NotificationsController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $unreadNotifications = $request->user()->unreadNotifications()->latest()->get();
@@ -48,6 +48,22 @@ class NotificationsController extends Controller
             ]);
 
             return ApiResponse::error(message: 'Failed to fetch notifications', status: 500);
+        }
+    }
+
+    public function unreadCount(Request $request): JsonResponse
+    {
+        try {
+            $unreadCount = $request->user()->unreadNotifications()->count();
+
+            return ApiResponse::success(message: 'Unread notifications count fetched successfully',
+                data: ['unread_count' => $unreadCount]);
+        } catch (Exception $e) {
+            Log::error('Failed to fetch unread notifications count: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return ApiResponse::error(message: 'Failed to fetch unread notifications count', status: 500);
         }
     }
 }
