@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\User\UserSimpleResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserSearchResource extends JsonResource
+class UserSearchResource extends UserSimpleResource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,7 @@ class UserSearchResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->name,
-            'user_name' => $this->username,
-            'avatar' => $this->avatar,
+            parent::toArray($request),
             'is_following' => $request->user()->isFollowing($this->resource),
         ];
     }
