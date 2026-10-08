@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\User\UserSimpleResource;
 use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -19,8 +20,9 @@ class ConversationUpdated implements ShouldBroadcast
      */
     public function __construct(
         protected Message $message,
-        protected int $unreadMessageCount,
-    ) {}
+        protected int $unreadCount,
+    ) {
+    }
 
     /**
      * Get the channels the event should broadcast on.
@@ -29,26 +31,37 @@ class ConversationUpdated implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        $recipientId = $this->message->conversation->users()->where('user_id', '!=',
-            $this->message->sender_id)->first()->id;
+        $recipientId = $this->message->conversation->users()
+            ->where('user_id', '!=', $this->message->sender_id)
+            ->value('users.id');
 
         return [
             new PrivateChannel('new-message.'.$recipientId),
         ];
     }
 
+    public function broadcastAs(): string
+    {
+        return 'conversation.updated';
+    }
+
     public function broadcastWith(): array
     {
+        $this->message->loadMissing('sender');
+
         return [
-            'conversation_id' => $this->message->conversation_id,
-            'sender' => [
-                'name' => $this->message->sender->name,
-                'avatar' => $this->message->sender->avatar,
+            'id' => $this->message->conversation_id,
+            'other_user' => $this->message->sender
+                ? (new UserSimpleResource($this->message->sender))->resolve()
+                : null,
+            'last_message' => [
+                'id' => $this->message->id,
+                'body' => $this->message->body,
+                'sender_id' => $this->message->sender_id,
+                'created_at' => $this->message->created_at->toIsoString(),
             ],
-            'body' => $this->message->body,
-            'sent_at' => $this->message->created_at->toIsoString(),
             'is_read' => false,
-            'unread_message_count' => $this->unreadMessageCount,
+            'unread_count' => $this->unreadCount,
         ];
     }
 }
