@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 it('allow user to register successfully', function () {
     Event::fake();
-    $response = $this->postJson(route('register'), $this->validData);
+    $response = $this->postJson(route('auth.register'), $this->validData);
     Event::assertDispatched(UserRegistered::class);
     $response->assertStatus(201);
     $response->assertJsonStructure([
@@ -45,7 +45,7 @@ it('fails registration if email is already taken', function () {
     Event::fake();
     $user = User::factory()->create();
     $response = $this->postJson(
-        route('register'),
+        route('auth.register'),
         array_merge($this->validData, ['email' => $user->email])
     );
     Event::assertNotDispatched(UserRegistered::class);
@@ -61,13 +61,13 @@ it('fails registration if email is already taken', function () {
 it('fails registration with invalid data', function (array $invalidField) {
     Event::fake();
     $response = $this->postJson(
-        route('register'),
+        route('auth.register'),
         array_merge($this->validData, $invalidField)
     );
     Event::assertNotDispatched(UserRegistered::class);
     $response->assertStatus(422);
 })->with([
     'invalid username' => [['username' => '@testuser']],
-    'taken username' => [fn () => ['username' => User::factory()->create()->username]],
+    'taken username' => [fn() => ['username' => User::factory()->create()->username]],
     'password not match' => [['password_confirmation' => 'wrongpassword']],
 ]);

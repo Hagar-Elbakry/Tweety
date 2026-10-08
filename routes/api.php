@@ -22,10 +22,10 @@ use App\Http\Controllers\API\V1\TypingController;
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
         PasswordResetController::class, 'resetPassword',
-    ])->name('resetPassword')->middleware('abilities:reset-password');
+    ])->name('resetPassword')->middleware(['throttle:otp', 'abilities:reset-password']);
     Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
     Route::post('email/verify/resend',
-        [EmailVerificationController::class, 'resend'])->name('resend')->middleware('throttle:resend-verification');
+        [EmailVerificationController::class, 'resend'])->name('resend')->middleware('throttle:otp');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
@@ -65,14 +65,17 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::post('/register', RegisterUserController::class)->name('register');
-    Route::post('/login', [AuthenticatedUserController::class, 'login'])->name('login')->middleware('throttle:login');
+    Route::post('/register', RegisterUserController::class)->middleware('throttle:auth')->name('auth.register');
+    Route::post('/login', [AuthenticatedUserController::class, 'login'])->middleware('throttle:auth')->name('login');
 
     Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
     Route::post('/forget-password',
-        [PasswordResetController::class, 'sendOtp'])->name('sendOtp')->middleware('throttle:forgot-password');
-    Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('verifyOtp');
+        [
+            PasswordResetController::class, 'sendOtp'
+        ])->middleware('throttle:auth')->name('sendOtp')->middleware('throttle:forgot-password');
+    Route::post('/verify-otp',
+        [PasswordResetController::class, 'verifyOtp'])->middleware('throttle:otp')->name('verifyOtp');
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
 });

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,34 +28,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('login', function ($request) {
-            return Limit::perMinute(5)->by($request->email.$request->ip())
-                ->response(function (Request $request, array $headers) {
-                    return ApiResponse::error(
-                        message: 'Too many login attempts. Retry after '.$headers['Retry-After'].' seconds.',
-                        status: 429
-                    );
-                });
-        });
+        RateLimiter::for('auth', fn(Request $request) => Limit::perMinute(5)->by($request->ip()));
 
-        RateLimiter::for('forgot-password', function ($request) {
-            return Limit::perMinute(3)->by($request->email.$request->ip())
-                ->response(function (Request $request, array $headers) {
-                    return ApiResponse::error(
-                        message: 'Too many password reset attempts. Retry after '.$headers['Retry-After'].' seconds.',
-                        status: 429
-                    );
-                });
-        });
-        RateLimiter::for('resend-verification', function ($request) {
-            return Limit::perMinute(3)->by($request->user()->id)
-                ->response(function (Request $request, array $headers) {
-                    return ApiResponse::error(
-                        message: 'Too many resend verification attempts. Retry after '.$headers['Retry-After'].' seconds.',
-                        status: 429
-                    );
-                });
-        });
+        RateLimiter::for('otp', fn (Request $request) => Limit::perMinute(3)
+            ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
+
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',
             'Like' => 'App\Notifications\NewLikeNotification',
