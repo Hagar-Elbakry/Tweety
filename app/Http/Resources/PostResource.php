@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\User\UserResource;
+use App\Http\Resources\User\UserSimpleResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -20,13 +20,13 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'body' => $this->body,
             'image' => $this->image ? Storage::url($this->image) : null,
-            'likes_count' => $this->likes_count,
-            'bookmark_count' => $this->bookmarks_count,
-            'comments_count' => $this->comments_count,
-            'reposts_count' => $this->reposts_count,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'user' => new UserResource($this->whenLoaded('user')),
+            'likes_count' => $this->whenCounted('likes'),
+            'bookmarks_count' => $this->whenCounted('bookmarks'),
+            'comments_count' => $this->whenCounted('comments'),
+            'reposts_count' => $this->whenCounted('reposts'),
+            'created_at' => $this->created_at->toIsoString(),
+            'updated_at' => $this->updated_at->toIsoString(),
+            'user' => $this->whenLoaded('user', fn() => new UserSimpleResource($this->user)),
         ];
     }
 }
