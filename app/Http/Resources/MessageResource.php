@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\User\UserSimpleResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -16,25 +17,24 @@ class MessageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'sender_name' => $this->sender->name,
-            'sender_avatar' => $this->sender->avatar,
+            'id' => $this->id,
+            'conversation_id' => $this->conversation_id,
             'body' => $this->body,
-            'attachments' => $this->attachments->map(function ($attachment) {
-                return [
-                    'url' => Storage::url($attachment->path),
-                    'type' => $attachment->type,
-                    'original_name' => $attachment->original_name,
-                ];
-            }),
-            'sent_at' => $this->created_at->toIsoString(),
-            'read_by' => $this->seenBy->map(function ($read) {
-                return [
-                    'name' => $read->user->name,
-                    'avatar' => $read->user->avatar,
-                    'seen_at' => $read->seen_at->toIsoString(),
-                ];
-            }),
-            'is_mine' => $request->user()->is($this->sender),
+            'sender' => $this->whenLoaded('sender',
+                fn() => $this->sender ? new UserSimpleResource($this->sender) : null),
+            'attachments' => $this->whenLoaded('attachments', fn() => $this->attachments->map(fn($attachment) => [
+                'id' => $attachment->id,
+                'url' => Storage::url($attachment->path),
+                'type' => $attachment->type,
+                'original_name' => $attachment->original_name,
+            ])),
+            'read_by' => $this->whenLoaded('seenBy', fn() => $this->seenBy->map(fn($read) => [
+                'user' => new UserSimpleResource($read->user),
+                'seen_at' => $read->seen_at->toIsoString(),
+            ])),
+            'is_mine' => $this->when($request->user() !== null, fn() => $request->user()->id === $this->sender_id),
+            'created_at' => $this->created_at->toIsoString(),
+            'updated_at' => $this->updated_at->toIsoString(),
         ];
     }
 }
