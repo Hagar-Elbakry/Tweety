@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -90,7 +92,17 @@ class User extends Authenticatable
 
     public function reposts(): HasMany
     {
-        return  $this->hasMany(PostRepost::class);
+        return $this->hasMany(PostRepost::class);
+    }
+
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::get(fn() => $this->avatar ? Storage::url($this->avatar) : null);
+    }
+
+    protected function bannerUrl(): Attribute
+    {
+        return Attribute::get(fn() => $this->banner ? Storage::url($this->banner) : null);
     }
 
     /**
