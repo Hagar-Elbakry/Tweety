@@ -17,11 +17,12 @@ class RegisterUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'username' => [
-                'bail', 'required', 'regex:/^(?![!@#$%^&*])[A-Za-z0-9_]+$/',
+                'bail', 'required', 'string', 'min:3', 'max:30',
+                'regex:/^[A-Za-z0-9_]+$/',
                 'unique:users,username',
             ],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:8', 'confirmed'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }
