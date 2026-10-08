@@ -18,35 +18,46 @@ use Laravel\Socialite\Socialite;
 
 class AuthenticationService
 {
+    private const TOKEN_LIFETIME_DAYS = 30;
+
     public function __construct(
         protected Otp $otp
-    ) {}
+    ) {
+    }
 
     public function register(array $data): array
     {
         return DB::transaction(function () use ($data) {
             $user = User::create(Arr::only($data, ['name', 'username', 'email', 'password']));
-            $token = $this->getToken($user);
+            $token = $this->issueToken($user);
             $otpCode = GeneratesOtp::generateOtp($user->email);
 
             UserRegistered::dispatch($user, $otpCode);
 
-            return compact('user', 'token');
+            return [
+                'user' => $user,
+                'token' => $token,
+            ];
         });
     }
 
-    private function getToken(User $user): string
+    private function issueToken(User $user): array
     {
-        return $user->createToken(name: 'auth_token.'.$user->username, expiresAt: now()->addDays(30))->plainTextToken;
+        $expiresAt = now()->addDays(self::TOKEN_LIFETIME_DAYS);
+        return [
+            'token' => $user->createToken(name: 'auth_token.'.$user->username, expiresAt: $expiresAt)->plainTextToken,
+            'token_type' => 'Bearer',
+            'expires_at' => $expiresAt->toIsoString(),
+        ];
     }
 
     public function login(array $data): ?array
     {
         $user = $this->authenticate($data['email'], $data['password']);
-        if (! $user) {
+        if (!$user) {
             return null;
         }
-        $token = $this->getToken($user);
+        $token = $this->issueToken($user);
 
         return compact('user', 'token');
     }
@@ -54,7 +65,7 @@ class AuthenticationService
     private function authenticate(string $email, string $password): ?User
     {
         $user = $this->getUser($email);
-        if (! $user || ! Hash::check($password, $user->password)) {
+        if (!$user || !Hash::check($password, $user->password)) {
             return null;
         }
 
@@ -84,7 +95,7 @@ class AuthenticationService
 
         return DB::transaction(function () use ($googleUser) {
             $user = User::where('email', $googleUser->getEmail())->first();
-            if (! $user) {
+            if (!$user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
@@ -96,14 +107,14 @@ class AuthenticationService
                 ]);
                 Mail::to($user)->queue(new WelcomeUserMail($user));
             } else {
-                if (! $user->provider) {
+                if (!$user->provider) {
                     $user->update([
                         'provider' => 'google',
                         'provider_id' => $googleUser->getId(),
                     ]);
                 }
             }
-            $token = $this->getToken($user);
+            $token = $this->issueToken($user);
 
             return compact('user', 'token');
         });
@@ -129,7 +140,7 @@ class AuthenticationService
     {
         return DB::transaction(function () use ($data, $user) {
             $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if (! $validatedOtp->status) {
+            if (!$validatedOtp->status) {
                 return null;
             }
             $user->update([
@@ -161,7 +172,7 @@ class AuthenticationService
     public function verifyOtp(array $data): ?string
     {
         $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-        if (! $validatedOtp->status) {
+        if (!$validatedOtp->status) {
             return null;
         }
         $user = $this->getUser($data['email']);
