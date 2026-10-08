@@ -21,7 +21,8 @@ class MessageService
 
     public function __construct(
         protected ConversationService $conversationService,
-    ) {}
+    ) {
+    }
 
     public function getMessagesForConversation(Conversation $conversation, User $user): LengthAwarePaginator
     {
@@ -29,11 +30,11 @@ class MessageService
             ->whereDoesntHave('deletedFor', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with(['sender', 'attachments', 'seenBy.user'])->paginate(10);
+            ->with(Message::RESOURCE_RELATIONS)->paginate(10);
         $seenAt = Carbon::now();
         $anyNewlyRead = false;
         $messages->each(function ($message) use ($user, &$seenAt, &$anyNewlyRead) {
-            if (! $message->seenBy->contains('user_id', $user->id) && $message->sender_id != $user->id) {
+            if (!$message->seenBy->contains('user_id', $user->id) && $message->sender_id != $user->id) {
                 MessageRead::create([
                     'message_id' => $message->id,
                     'user_id' => $user->id,
@@ -66,7 +67,7 @@ class MessageService
                 ]);
             }
         }
-        $message->load(['sender', 'attachments']);
+        $message->load(Message::RESOURCE_RELATIONS);
         $recipient = $message->conversation->users()->where('users.id', '!=', $user->id)->first();
         $unreadCount = $this->conversationService->getUnreadCount($recipient);
         broadcast(new MessageSent($message))->toOthers();
@@ -80,13 +81,13 @@ class MessageService
         $message->update(['body' => $body]);
         broadcast(new MessageUpdated($message))->toOthers();
 
-        return $message;
+        return $message->load(Message::RESOURCE_RELATIONS);
     }
 
     public function deleteForUser(Message $message, User $user): void
     {
         $isDeleted = MessageDelete::where('message_id', $message->id)->where('user_id', $user->id)->exists();
-        if (! $isDeleted) {
+        if (!$isDeleted) {
             MessageDelete::create([
                 'message_id' => $message->id,
                 'user_id' => $user->id,

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Message extends Model
 {
+    public const RESOURCE_RELATIONS = ['sender', 'attachments', 'seenBy.user'];
     protected $fillable = [
         'conversation_id',
         'sender_id',
