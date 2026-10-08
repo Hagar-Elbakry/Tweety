@@ -2,13 +2,16 @@
 
 use App\Helpers\ApiResponse;
 use App\Http\Middleware\ForceJsonResponse;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,11 +30,20 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ValidationException $e) {
-            return ApiResponse::error(
-                message: 'Validation Errors',
-                data: $e->errors(),
-                status: 422
-            );
+            return ApiResponse::error(message: 'Validation Errors', data: $e->errors(), status: 422);
+        });
+
+        $exceptions->render(function (AuthenticationException $e) {
+            return ApiResponse::error(message: 'Unauthenticated.', status: 401);
+        });
+
+        $exceptions->render(function (AccessDeniedHttpException $e) {
+            return ApiResponse::error(message: 'This action is unauthorized.', status: 403);
+        });
+        
+        $exceptions->render(function (TooManyRequestsHttpException $e) {
+            return ApiResponse::error(message: 'Too many requests, please try again later.', status: 429)
+                ->withHeaders($e->getHeaders());
         });
 
         $exceptions->render(function (NotFoundHttpException $e) {
