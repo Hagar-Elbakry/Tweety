@@ -14,20 +14,22 @@ use Illuminate\Support\Facades\Log;
 class RegisterUserController extends Controller
 {
     public function __construct(
-        protected AuthenticationService $userService
-    ) {}
+        protected AuthenticationService $authService
+    ) {
+    }
 
     public function __invoke(RegisterUserRequest $request): JsonResponse
     {
         try {
-            $data = $request->validated();
-            $result = $this->userService->register($data);
+            $result = $this->authService->register($request->validated());
 
             return ApiResponse::success(
                 message: 'User created successfully',
                 data: [
                     'user' => new UserResource($result['user']),
                     'token' => $result['token'],
+                    'token_type' => $result['token_type'],
+                    'expires_at' => $result['expires_at'],
                 ],
                 status: 201
             );
