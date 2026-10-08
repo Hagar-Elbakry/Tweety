@@ -11,9 +11,11 @@ class ConversationService
 {
     public function getUserConversations(User $user): LengthAwarePaginator
     {
-        return Conversation::whereHas('users', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->with(['users', 'lastMessage'])->paginate(20);
+        return Conversation::whereHas('users', fn($q) => $q->where('users.id', $user->id))
+            ->with(['users', 'lastMessage'])
+            ->withMax('messages as last_message_at', 'created_at')
+            ->orderByDesc('last_message_at')
+            ->paginate(20);
     }
 
     public function findOrCreateBetween(User $sender, User $recipient): Conversation

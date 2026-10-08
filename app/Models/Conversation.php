@@ -8,14 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Conversation extends Model
 {
     /**
-     * The users that belong to the conversation.
-     */
-    public function users()
-    {
-        return $this->belongsToMany(User::class)->withTimestamps()->withPivot('read_at');
-    }
-
-    /**
      * The messages that belong to the conversation.
      */
     public function messages(): HasMany
@@ -30,20 +22,24 @@ class Conversation extends Model
 
     public function isReadFor(User $user): bool
     {
-        if (! $this->lastMessage) {
+        if (!$this->lastMessage) {
             return true;
         }
 
-        $readAt = $this->users()
-            ->where('users.id', $user->id)
-            ->first()
-            ?->pivot
-            ->read_at;
+        $participant = $this->relationLoaded('users')
+            ? $this->users->firstWhere('id', $user->id)
+            : $this->users()->where('users.id', $user->id)->first();
 
-        if (! $readAt) {
-            return false;
-        }
+        $readAt = $participant?->pivot->read_at;
 
-        return $this->lastMessage->created_at->lessThanOrEqualTo($readAt);
+        return $readAt !== null && $this->lastMessage->created_at->lessThanOrEqualTo($readAt);
+    }
+
+    /**
+     * The users that belong to the conversation.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps()->withPivot('read_at');
     }
 }
