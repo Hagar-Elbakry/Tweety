@@ -67,6 +67,6 @@ it('broadcasts ConversationUpdated with the correct unread count', function () {
         ]);
 
     Event::assertDispatched(ConversationUpdated::class, function ($event) {
-        return $event->broadcastWith()['unread_message_count'] === 3;
+        return $event->broadcastWith()['unread_count'] === 3;
     });
 });
