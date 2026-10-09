@@ -23,8 +23,9 @@ it('finds users whose name starts with the query', function () {
     $response->assertJsonStructure([
         'data' => [
             '*' => [
+                'id',
                 'name',
-                'user_name',
+                'username',
                 'avatar',
                 'is_following',
             ],
@@ -39,8 +40,9 @@ it('finds users whose username starts with the query', function () {
     $response->assertJsonStructure([
         'data' => [
             '*' => [
+                'id',
                 'name',
-                'user_name',
+                'username',
                 'avatar',
                 'is_following',
             ],
