@@ -16,30 +16,25 @@ beforeEach(function () {
 it('allows a participant to send a message', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-            'body' => 'Hello, this is a test message.',
-        ]);
+        'body' => 'Hello, this is a test message.',
+    ]);
     $response->assertStatus(200);
     $response->assertJsonStructure([
         'data' => [
-            'sender_name',
-            'sender_avatar',
+            'id',
+            'conversation_id',
             'body',
-            'attachments' => [
-                '*' => [
-                    'url',
-                    'type',
-                    'original_name',
-                ],
+            'sender' => [
+                'id',
+                'name',
+                'username',
+                'avatar',
             ],
-            'sent_at',
-            'read_by' => [
-                '*' => [
-                    'name',
-                    'avatar',
-                    'seen_at',
-                ],
-            ],
+            'attachments',
+            'read_by',
             'is_mine',
+            'created_at',
+            'updated_at',
         ],
     ]);
 
@@ -54,8 +49,8 @@ it('rejects sending a message from a non-participant', function () {
     $otherUser = User::factory()->create();
     $response = $this->actingAs($otherUser, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-            'body' => 'Hello, this is a test message.',
-        ]);
+        'body' => 'Hello, this is a test message.',
+    ]);
     $response->assertStatus(403);
 });
 
@@ -63,16 +58,14 @@ it('requires body or attachments', function () {
     $response = $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id));
     $response->assertStatus(422);
-    $response->assertJsonStructure([
-        'data' => ['body', 'attachments'],
-    ]);
+    $response->assertJsonValidationErrors(['body', 'attachments']);
 });
 
 it('broadcasts MessageSent when a message is sent', function () {
     Event::fake();
     $this->actingAs($this->user1, 'sanctum')->postJson(route('conversations.messages.store',
         $this->conversation->id), [
-            'body' => 'Hello, this is a test message.',
-        ]);
+        'body' => 'Hello, this is a test message.',
+    ]);
     Event::assertDispatched(MessageSent::class);
 });
