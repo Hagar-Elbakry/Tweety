@@ -44,13 +44,13 @@ it('allow user to logout', function () {
     $response = $this->postJson(route('login'), $this->validData);
     $token = $response->json('data.token');
 
-    $this->withHeader('Authorization', 'Bearer '.$token)
+    $this->withHeader('Authorization', 'Bearer '.$token['token'])
         ->postJson(route('logout'))
         ->assertStatus(200);
 
     auth()->forgetGuards();
 
-    $response2 = $this->withHeader('Authorization', 'Bearer '.$token)
+    $response2 = $this->withHeader('Authorization', 'Bearer '.$token['token'])
         ->postJson(route('logout'));
     $response2->assertStatus(401);
 });
