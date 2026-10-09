@@ -16,7 +16,7 @@ it('can create a post', function () {
             'body',
             'image',
             'likes_count',
-            'bookmark_count',
+            'bookmarks_count',
             'comments_count',
             'created_at',
             'updated_at',
