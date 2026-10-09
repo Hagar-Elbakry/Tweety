@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ValidationException $e) {
-            return ApiResponse::error(message: 'Validation Errors', data: $e->errors(), status: 422);
+            return ApiResponse::error(message: 'Validation Errors', errors: $e->errors(), status: 422);
         });
 
         $exceptions->render(function (AuthenticationException $e) {
@@ -40,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AccessDeniedHttpException $e) {
             return ApiResponse::error(message: 'This action is unauthorized.', status: 403);
         });
-        
+
         $exceptions->render(function (TooManyRequestsHttpException $e) {
             return ApiResponse::error(message: 'Too many requests, please try again later.', status: 429)
                 ->withHeaders($e->getHeaders());
