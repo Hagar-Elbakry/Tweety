@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteMessageRequest;
 use App\Http\Requests\GetConversationMessageRequest;
@@ -20,15 +21,19 @@ class MessageController extends Controller
 {
     public function __construct(
         protected MessageService $messageService,
-    ) {}
+    ) {
+    }
 
     public function index(GetConversationMessageRequest $request, Conversation $conversation): JsonResponse
     {
         try {
             $messages = $this->messageService->getMessagesForConversation($conversation, $request->user());
 
-            return ApiResponse::success(message: 'Messages retrieved successfully',
-                data: MessageResource::collection($messages));
+            return ApiResponse::success(
+                message: 'Messages retrieved successfully',
+                data: MessageResource::collection($messages),
+                meta: Pagination::meta($messages)
+            );
         } catch (Exception $e) {
             Log::error('Failed to retrieve messages: '.$e->getMessage());
 
@@ -39,7 +44,8 @@ class MessageController extends Controller
     public function store(StoreMessageRequest $request, Conversation $conversation): JsonResponse
     {
         try {
-            $message = $this->messageService->sendMessage($conversation, $request->validated('body'), $request->validated('attachments'), $request->user());
+            $message = $this->messageService->sendMessage($conversation, $request->validated('body'),
+                $request->validated('attachments'), $request->user());
 
             return ApiResponse::success(message: 'Message sent', data: new MessageResource($message));
         } catch (Exception $e) {
