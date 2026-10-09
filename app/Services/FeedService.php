@@ -17,7 +17,7 @@ class FeedService
         $userIds = $user->following()->pluck('users.id')->push($user->id);
 
         $posts = Post::whereIn('user_id', $userIds)
-            ->withCount([self::COUNTS])
+            ->withCount(self::COUNTS)
             ->with('user')
             ->get()
             ->map(fn($post) => [
