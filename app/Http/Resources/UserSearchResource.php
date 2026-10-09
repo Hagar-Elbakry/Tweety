@@ -15,7 +15,7 @@ class UserSearchResource extends UserSimpleResource
     public function toArray(Request $request): array
     {
         return [
-            parent::toArray($request),
+            ...parent::toArray($request),
             'is_following' => $request->user()->isFollowing($this->resource),
         ];
     }
