@@ -22,7 +22,7 @@ class Conversation extends Model
 
     public function isReadFor(User $user): bool
     {
-        if (!$this->lastMessage) {
+        if (!$this->lastMessage || $this->lastMessage->sender_id === $user->id) {
             return true;
         }
 
