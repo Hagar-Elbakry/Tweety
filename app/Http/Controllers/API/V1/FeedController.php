@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FeedItemResource;
 use App\Services\FeedService;
@@ -26,6 +27,7 @@ class FeedController extends Controller
             return ApiResponse::success(
                 message: 'Feed loaded successfully',
                 data: FeedItemResource::collection($items),
+                meta: Pagination::meta($items)
             );
         } catch (Exception $e) {
             Log::error('Failed to load feed: '.$e->getMessage());
