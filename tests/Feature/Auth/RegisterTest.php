@@ -29,6 +29,7 @@ it('registers a user and returns the user with a token', function () {
                     'avatar',
                     'banner',
                     'bio',
+                    'email_verified_at',
                     'created_at',
                     'updated_at',
                 ],
@@ -78,6 +79,13 @@ it('dispatches UserRegistered with a 6-digit otp', function () {
         return $event->user->email === $this->validData['email']
             && preg_match('/^\d{6}$/', (string) $event->otpCode) === 1;
     });
+});
+
+it('creates the user as unverified so the client can route to the otp screen', function () {
+    $response = $this->postJson(route('auth.register'), $this->validData);
+
+    $response->assertJsonPath('data.user.email_verified_at', null);
+    expect(User::where('email', $this->validData['email'])->firstOrFail()->email_verified_at)->toBeNull();
 });
 
 it('rejects invalid registration data', function (array $override, string $field) {
