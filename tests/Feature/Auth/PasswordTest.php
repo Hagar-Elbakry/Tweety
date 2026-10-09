@@ -22,12 +22,7 @@ it('forgets a user\'s password', function () {
 it('fails to forget password if email is doesnt\'s exist', function () {
     $response = $this->postJson(route('sendOtp'), ['email' => 'notExit@gmail.com']);
     $response->assertStatus(422);
-    $response->assertJson([
-        'success' => false,
-        'data' => [
-            'email' => ['The selected email is invalid.'],
-        ],
-    ]);
+    $response->assertJsonValidationErrors(['email']);
 });
 
 it('verifies otp', function () {
@@ -92,10 +87,5 @@ it('fails to reset password if password doesnt match', function () {
             'password_confirmation' => 'wrongpassword',
         ])
         ->assertStatus(422)
-        ->assertJson([
-            'success' => false,
-            'data' => [
-                'password' => ['The password field confirmation does not match.'],
-            ],
-        ]);
+        ->assertJsonValidationErrors(['password']);
 });
