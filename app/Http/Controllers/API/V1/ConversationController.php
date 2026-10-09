@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreConversationRequest;
 use App\Http\Resources\ConversationResource;
@@ -17,7 +18,8 @@ class ConversationController extends Controller
 {
     public function __construct(
         protected ConversationService $conversationService,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -25,7 +27,9 @@ class ConversationController extends Controller
             $conversations = $this->conversationService->getUserConversations($request->user());
 
             return ApiResponse::success(message: 'Conversations retrieved successfully',
-                data: ConversationResource::collection($conversations));
+                data: ConversationResource::collection($conversations),
+                meta: Pagination::meta($conversations)
+            );
         } catch (Exception $e) {
             Log::error('Failed to retrieve messages: '.$e->getMessage());
 
