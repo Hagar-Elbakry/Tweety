@@ -15,7 +15,8 @@ class UserRegistered
      */
     public function __construct(
         public User $user,
-        public $otpCode
-    ) {}
+        public string $otpCode
+    ) {
+    }
 
 }

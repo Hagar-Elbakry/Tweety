@@ -36,7 +36,7 @@ class AuthenticationService
 
             return [
                 'user' => $user,
-                'token' => $token,
+                ...$token
             ];
         });
     }
