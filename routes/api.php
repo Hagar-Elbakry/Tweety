@@ -74,7 +74,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/forget-password',
         [
             PasswordResetController::class, 'sendOtp'
-        ])->middleware('throttle:auth')->name('sendOtp')->middleware('throttle:forgot-password');
+        ])->middleware('throttle:auth')->name('sendOtp');
     Route::post('/verify-otp',
         [PasswordResetController::class, 'verifyOtp'])->middleware('throttle:otp')->name('verifyOtp');
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
