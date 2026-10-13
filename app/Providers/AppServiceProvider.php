@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Helpers\ApiResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -30,8 +29,16 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('auth', fn(Request $request) => Limit::perMinute(5)->by($request->ip()));
 
-        RateLimiter::for('otp', fn (Request $request) => Limit::perMinute(3)
+        RateLimiter::for('otp', fn(Request $request) => Limit::perMinute(3)
             ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
+
+        RateLimiter::for('otp-verify', fn(Request $request) => Limit::perMinute(5)
+            ->by($request->user()?->id ?? $request->ip()));
+
+        RateLimiter::for('otp-resend', fn(Request $request) => [
+            Limit::perMinute(1)->by($request->user()?->id ?? $request->ip()),
+            Limit::perHour(5)->by($request->user()?->id ?? $request->ip()),
+        ]);
 
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',

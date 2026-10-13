@@ -23,9 +23,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/reset-password', [
         PasswordResetController::class, 'resetPassword',
     ])->name('resetPassword')->middleware(['throttle:otp', 'abilities:reset-password']);
-    Route::post('email/verify', [EmailVerificationController::class, 'verify'])->name('verify');
+    Route::post('email/verify',
+        [EmailVerificationController::class, 'verify'])->middleware('throttle:otp-verify')->name('auth.email.verify');
     Route::post('email/verify/resend',
-        [EmailVerificationController::class, 'resend'])->name('resend')->middleware('throttle:otp');
+        [EmailVerificationController::class, 'resend'])->middleware('throttle:otp-resend')->name('auth.email.resend');
     Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
