@@ -10,21 +10,24 @@ use App\Services\AuthenticationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedUserController extends Controller
 {
     public function __construct(
-        protected AuthenticationService $userService
-    ) {}
+        protected AuthenticationService $authService
+    ) {
+    }
 
     public function login(LoginUserRequest $request): JsonResponse
     {
         try {
-            $data = $request->validated();
-            $result = $this->userService->login($data);
-            if (! $result) {
-                return ApiResponse::error(message: 'The provided credentials do not match our records.', status: 401);
+            $result = $this->authService->login($request->validated());
+
+            if (!$result) {
+                $message = 'The provided credentials do not match our records.';
+
+                return ApiResponse::error(message: $message, status: 422, errors: ['email' => [$message]]);
             }
 
             return ApiResponse::success(
@@ -32,6 +35,8 @@ class AuthenticatedUserController extends Controller
                 data: [
                     'user' => new UserResource($result['user']),
                     'token' => $result['token'],
+                    'token_type' => $result['token_type'],
+                    'expires_at' => $result['expires_at'],
                 ]
             );
         } catch (Exception $e) {
@@ -46,8 +51,7 @@ class AuthenticatedUserController extends Controller
     public function logout(Request $request): JsonResponse
     {
         try {
-            $user = $request->user();
-            $this->userService->logout($user);
+            $this->authService->logout($request->user());
 
             return ApiResponse::success(message: 'User logged out successfully');
         } catch (Exception $e) {

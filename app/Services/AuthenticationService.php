@@ -34,10 +34,7 @@ class AuthenticationService
 
             UserRegistered::dispatch($user, $otpCode);
 
-            return [
-                'user' => $user,
-                ...$token
-            ];
+            return ['user' => $user, ...$token];
         });
     }
 
@@ -59,7 +56,7 @@ class AuthenticationService
         }
         $token = $this->issueToken($user);
 
-        return compact('user', 'token');
+        return ['user' => $user, ...$token];
     }
 
     private function authenticate(string $email, string $password): ?User
