@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -53,4 +54,14 @@ function insertOtp(string $email, bool $expired = false)
         'created_at' => $expired ? now()->subMinutes(30) : now(),
         'updated_at' => $expired ? now()->subMinutes(30) : now(),
     ]);
+}
+
+function verifyAs(User $user, mixed $otp)
+{
+    return test()->actingAs($user, 'sanctum')->postJson(route('auth.email.verify'), ['otp' => $otp]);
+}
+
+function resendAs(User $user)
+{
+    return test()->actingAs($user, 'sanctum')->postJson(route('auth.email.resend'));
 }
