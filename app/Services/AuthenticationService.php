@@ -136,11 +136,10 @@ class AuthenticationService
         return $username;
     }
 
-    public function verifyEmail(array $data, User $user): ?User
+    public function verifyEmail(string $otp, User $user): ?User
     {
-        return DB::transaction(function () use ($data, $user) {
-            $validatedOtp = $this->otp->validate($user->email, $data['otp']);
-            if (!$validatedOtp->status) {
+        return DB::transaction(function () use ($otp, $user) {
+            if (!$this->otp->validate($user->email, $otp)->status) {
                 return null;
             }
             $user->update([

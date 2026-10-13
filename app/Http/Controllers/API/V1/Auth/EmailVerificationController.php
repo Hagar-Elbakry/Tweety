@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailRequest;
+use App\Http\Resources\User\UserResource;
 use App\Services\AuthenticationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -14,20 +15,33 @@ use Illuminate\Support\Facades\Log;
 class EmailVerificationController extends Controller
 {
     public function __construct(
-        protected AuthenticationService $userService
-    ) {}
+        protected AuthenticationService $authService
+    ) {
+    }
 
     public function verify(VerifyEmailRequest $request): JsonResponse
     {
         try {
-            $data = $request->validated();
             $user = $request->user();
-            $result = $this->userService->verifyEmail($data, $user);
-            if (! $result) {
-                return ApiResponse::error(message: 'Invalid Or Expired OTP', status: 401);
+
+            if ($user->hasVerifiedEmail()) {
+                return ApiResponse::error(message: 'User already verified', status: 409);
             }
 
-            return ApiResponse::success(message: 'User verified successfully');
+            $verifiedUser = $this->authService->verifyEmail((string) $request->validated('otp'), $user);
+
+            if (!$verifiedUser) {
+                return ApiResponse::error(
+                    message: 'Invalid or expired OTP',
+                    status: 422,
+                    errors: ['otp' => ['Invalid or expired OTP']]
+                );
+            }
+
+            return ApiResponse::success(
+                message: 'User verified successfully',
+                data: ['user' => new UserResource($verifiedUser)]
+            );
         } catch (Exception $e) {
             Log::error('Error verifying user: '.$e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
@@ -40,9 +54,9 @@ class EmailVerificationController extends Controller
     public function resend(Request $request): JsonResponse
     {
         try {
-            $user = $request->user();
-            $result = $this->userService->resendEmailVerificationOtp($user);
-            if (! $result) {
+            $result = $this->authService->resendEmailVerificationOtp($request->user());
+            
+            if (!$result) {
                 return ApiResponse::error(message: 'User already verified', status: 409);
             }
 
