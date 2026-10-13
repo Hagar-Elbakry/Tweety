@@ -27,7 +27,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         [EmailVerificationController::class, 'verify'])->middleware('throttle:otp-verify')->name('auth.email.verify');
     Route::post('email/verify/resend',
         [EmailVerificationController::class, 'resend'])->middleware('throttle:otp-resend')->name('auth.email.resend');
-    Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthenticatedUserController::class, 'logout'])->name('auth.logout');
 
     Route::apiResource('posts', PostController::class)->except(['index', 'show']);
     Route::get('/profile/me', [ProfileController::class, 'me'])->name('profile.me');
@@ -67,7 +67,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', RegisterUserController::class)->middleware('throttle:auth')->name('auth.register');
-    Route::post('/login', [AuthenticatedUserController::class, 'login'])->middleware('throttle:auth')->name('login');
+    Route::post('/login',
+        [AuthenticatedUserController::class, 'login'])->middleware('throttle:login')->name('auth.login');
 
     Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
