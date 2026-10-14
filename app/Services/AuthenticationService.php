@@ -9,10 +9,12 @@ use App\Mail\VerifyEmail;
 use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
 
@@ -158,31 +160,35 @@ class AuthenticationService
         return $user;
     }
 
-    public function sendPasswordResetOtp(array $data): void
+    public function sendPasswordResetOtp(string $email): void
     {
-        $user = $this->getUser($data['email']);
+        $user = $this->getUser($email);
+        if (!$user) {
+            return;
+        }
         $otpCode = GeneratesOtp::generateOtp($user->email);
         Mail::to($user)->queue(new ResetPassword($user, $otpCode));
     }
 
-    public function verifyOtp(array $data): ?string
+    public function verifyOtp(string $email, string $otp): ?string
     {
-        $validatedOtp = $this->otp->validate($data['email'], $data['otp']);
-        if (!$validatedOtp->status) {
+        if (!$this->otp->validate($email, $otp)->status) {
             return null;
         }
-        $user = $this->getUser($data['email']);
-        $token = $user->createToken('password_reset.'.$user->username, ['reset-password'],
-            now()->addMinutes(15))->plainTextToken;
-
-        return $token;
+        $user = $this->getUser($email);
+        return $user ? Password::createToken($user) : null;
     }
 
-    public function resetPassword(array $data, User $user): void
+    public function resetPassword(array $data): bool
     {
-        $user->update([
-            'password' => $data['password'],
-        ]);
-        $user->tokens()->delete();
+        $status = Password::reset(
+            Arr::only($data, ['email', 'token', 'password']),
+            function (User $user, string $password) {
+                $user->forceFill(['password' => $password])->save();
+                $user->tokens()->delete();
+                event(new PasswordReset($user));
+            }
+        );
+        return $status === Password::PASSWORD_RESET;
     }
 }
