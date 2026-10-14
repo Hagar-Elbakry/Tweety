@@ -7,8 +7,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\Http\Middleware\CheckAbilities;
-use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -22,10 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            'abilities' => CheckAbilities::class,
-            'ability' => CheckForAnyAbility::class,
-        ]);
         $middleware->append(ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

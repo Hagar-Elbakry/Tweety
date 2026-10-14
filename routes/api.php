@@ -20,9 +20,6 @@ use App\Http\Controllers\API\V1\SearchController;
 use App\Http\Controllers\API\V1\TypingController;
 
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
-    Route::post('/reset-password', [
-        PasswordResetController::class, 'resetPassword',
-    ])->name('resetPassword')->middleware(['throttle:otp', 'abilities:reset-password']);
     Route::post('email/verify',
         [EmailVerificationController::class, 'verify'])->middleware('throttle:otp-verify')->name('auth.email.verify');
     Route::post('email/verify/resend',
@@ -76,8 +73,11 @@ Route::prefix('v1')->group(function () {
     Route::post('/forget-password',
         [
             PasswordResetController::class, 'sendOtp'
-        ])->middleware('throttle:auth')->name('sendOtp');
+        ])->middleware('throttle:password-reset')->name('auth.password.forgot');
     Route::post('/verify-otp',
-        [PasswordResetController::class, 'verifyOtp'])->middleware('throttle:otp')->name('verifyOtp');
+        [PasswordResetController::class, 'verifyOtp'])->middleware('throttle:otp')->name('auth.password.verify-otp');
+    Route::post('/reset-password', [
+        PasswordResetController::class, 'resetPassword',
+    ])->middleware('throttle:password-reset-submit')->name('auth.password.reset');
     Route::get('/profile/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
 });

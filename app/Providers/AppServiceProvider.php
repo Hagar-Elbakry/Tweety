@@ -29,21 +29,41 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('auth', fn(Request $request) => Limit::perMinute(5)->by($request->ip()));
 
-        RateLimiter::for('login', fn (Request $request) => [
+        RateLimiter::for('login', fn(Request $request) => [
             Limit::perMinute(5)->by(Str::lower((string) $request->input('email')).'|'.$request->ip()),
             Limit::perMinute(20)->by($request->ip()),
         ]);
 
-        RateLimiter::for('otp', fn(Request $request) => Limit::perMinute(3)
-            ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
+        RateLimiter::for('otp', function (Request $request) {
+            $email = Str::lower((string) $request->input('email'));
+
+            return [
+                Limit::perMinute(5)->by('m:'.$email),
+                Limit::perHour(10)->by('h:'.$email),
+                Limit::perMinute(20)->by('ip:'.$request->ip()),
+            ];
+        });
 
         RateLimiter::for('otp-verify', fn(Request $request) => Limit::perMinute(5)
             ->by($request->user()?->id ?? $request->ip()));
 
         RateLimiter::for('otp-resend', fn(Request $request) => [
-            Limit::perMinute(1)->by($request->user()?->id ?? $request->ip()),
-            Limit::perHour(5)->by($request->user()?->id ?? $request->ip()),
+            Limit::perMinute(1)->by('m:'.($request->user()?->id ?? $request->ip())),
+            Limit::perHour(5)->by('h:'.($request->user()?->id ?? $request->ip())),
         ]);
+
+        RateLimiter::for('password-reset', function (Request $request) {
+            $email = $request->input('email');
+
+            return [
+                Limit::perMinute(1)->by('m:'.$email),
+                Limit::perHour(5)->by('h:'.$email),
+                Limit::perMinute(10)->by('ip:'.$request->ip()),
+            ];
+        });
+
+        RateLimiter::for('password-reset-submit', fn(Request $request) => Limit::perMinute(5)
+            ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
 
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',
