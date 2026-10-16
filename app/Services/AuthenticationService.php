@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Exceptions\SocialAuthException;
 use App\Helpers\GeneratesOtp;
 use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
@@ -81,57 +82,81 @@ class AuthenticationService
         $user->currentAccessToken()->delete();
     }
 
-    public function redirectToGoogle(): string
+    public function redirectToGoogle(): array
     {
-        $redirectUrl = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+        $state = Str::random(40);
+        $url = Socialite::driver('google')->stateless()->with(['state' => $state])->redirect()->getTargetUrl();
 
-        return $redirectUrl;
+        return ['url' => $url, 'state' => $state];
     }
 
     public function handleGoogleCallback(): array
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
+        $email = $googleUser->getEmail();
+        $emailVerified = filter_var($googleUser->user['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        return DB::transaction(function () use ($googleUser) {
-            $user = User::where('email', $googleUser->getEmail())->first();
+        if ($email === '' || !$emailVerified) {
+            throw new SocialAuthException('Your Google email address is not verified.');
+        }
+
+        return DB::transaction(function () use ($googleUser, $email) {
+            $googleId = (string) $googleUser->getId();
+            $isNewUser = false;
+
+            $user = User::where('provider', 'google')->where('provider_id', $googleId)->first();
             if (!$user) {
-                $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'username' => $this->generateUniqueUsername($googleUser->getName()),
-                    'email' => $googleUser->getEmail(),
-                    'password' => Str::random(32),
-                    'provider' => 'google',
-                    'provider_id' => $googleUser->getId(),
-                    'email_verified_at' => now(),
-                ]);
-                Mail::to($user)->queue(new WelcomeUserMail($user));
-            } else {
-                if (!$user->provider) {
-                    $user->update([
+                $user = User::where('email', $email)->first();
+
+                if ($user) {
+                    $this->linkGoogleAccount($user, $googleId);
+                } else {
+                    $user = User::create([
+                        'name' => $googleUser->getName() ?: Str::before($email, '@'),
+                        'username' => $this->generateUniqueUsername($googleUser->getName() ?: Str::before($email, '@')),
+                        'email' => $email,
+                        'password' => Str::random(32),
                         'provider' => 'google',
-                        'provider_id' => $googleUser->getId(),
+                        'provider_id' => $googleId,
+                        'email_verified_at' => now(),
                     ]);
+                    $isNewUser = true;
+
+                    Mail::to($user)->queue(new WelcomeUserMail($user));
                 }
             }
             $token = $this->issueToken($user);
-
-            return compact('user', 'token');
+            return ['user' => $user, 'is_new_user' => $isNewUser, ...$token];
         });
+    }
+
+    private function linkGoogleAccount(User $user, string $googleId): void
+    {
+        if ($user->provider_id !== null && $user->provider_id !== $googleId) {
+            throw new SocialAuthException('This email is already linked to a different Google account.', 409);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            $user->tokens()->delete();
+            $user->password = Str::random(32);
+        }
+
+        $user->forceFill([
+            'provider' => 'google',
+            'provider_id' => $googleId,
+            'email_verified_at' => $user->email_verified_at ?? now(),
+        ])->save();
     }
 
     private function generateUniqueUsername(string $name): string
     {
-        $username = Str::slug($name, '');
-        $latestUsername = User::whereRaw('username REGEXP ?', ['^'.$username.'[0-9]*$'])
-            ->orderByRaw('LENGTH(username) DESC')
-            ->orderByDesc('username')
-            ->first();
-        if ($latestUsername) {
-            $number = str_replace($username, '', $latestUsername->username);
+        $base = Str::limit(Str::slug($name, ''), 20, '') ?: 'user';
+        $username = $base;
 
-            return $username.(is_numeric($number) ? (int) $number + 1 : 1);
+        while (User::where('username', $username)->exists()) {
+            $username = $base.random_int(100, 99999);
         }
-
+        
         return $username;
     }
 
