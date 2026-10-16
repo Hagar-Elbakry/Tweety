@@ -65,6 +65,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('password-reset-submit', fn(Request $request) => Limit::perMinute(5)
             ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
 
+        RateLimiter::for('social', fn(Request $request) => Limit::perMinute(10)->by($request->ip()));
+
         Relation::morphMap([
             'Follow' => 'App\Notifications\NewFollowNotification',
             'Like' => 'App\Notifications\NewLikeNotification',

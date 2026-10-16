@@ -67,8 +67,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login',
         [AuthenticatedUserController::class, 'login'])->middleware('throttle:login')->name('auth.login');
 
-    Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])->name('google.redirect');
-    Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
+    Route::get('/google/redirect',
+        [SocialAuthController::class, 'redirectToGoogle'])->middleware('throttle:social')->name('google.redirect');
+    Route::post('/google/callback',
+        [SocialAuthController::class, 'handleGoogleCallback'])->middleware('throttle:social')->name('google.callback');
 
     Route::post('/forget-password',
         [
