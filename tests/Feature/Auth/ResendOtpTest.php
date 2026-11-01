@@ -4,15 +4,12 @@ use App\Mail\VerifyEmail;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
-beforeEach(function () {
-    $this->user = User::factory()->unverified()->create();
-});
-
 it('invalidates the old code and the new one verifies', function () {
+    $user = User::factory()->unverified()->create();
     Mail::fake();
-    insertOtp($this->user->email);
+    insertOtp($user->email);
 
-    resendAs($this->user)->assertStatus(200);
+    resendAs($user)->assertStatus(200);
 
     $newCode = null;
     Mail::assertQueued(VerifyEmail::class, function (VerifyEmail $mail) use (&$newCode) {
@@ -21,8 +18,8 @@ it('invalidates the old code and the new one verifies', function () {
         return true;
     });
 
-    verifyAs($this->user, '123456')->assertStatus(422);
-    verifyAs($this->user, $newCode)->assertStatus(200);
+    verifyAs($user, '123456')->assertStatus(422);
+    verifyAs($user, $newCode)->assertStatus(200);
 });
 
 it('does not resend to an already verified user', function () {
