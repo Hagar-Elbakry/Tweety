@@ -16,7 +16,7 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['required_without:image', 'nullable', 'max:255'],
+            'body' => ['required_without:image', 'nullable', 'string', 'max:255'],
             'image' => [
                 'required_without:body', 'nullable', 'image', File::types(['jpg', 'jpeg', 'png', 'gif'])->max(5 * 1024),
             ],
