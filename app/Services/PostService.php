@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Traits\Uploadable;
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 class PostService
@@ -14,50 +15,72 @@ class PostService
 
     public function create(array $data, User $user): Post
     {
-        if (isset($data['image'])) {
-            $data['image'] = $this->uploadFile($data['image'], 'posts');
-        }
-        $post = $user->posts()->create($data);
+        $newImage = isset($data['image']) ? $this->uploadFile($data['image'], 'posts') : null;
 
-        return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks', 'reposts']);
+        try {
+            $post = $user->posts()->create(Arr::only($data, ['body']) + ['image' => $newImage]);
+        } catch (Exception $e) {
+            if ($newImage) {
+                $this->deleteFile($newImage);
+            }
+            throw $e;
+        }
+
+        return $this->withResourceData($post);
+    }
+
+    private function withResourceData(Post $post): Post
+    {
+        return $post->load('user')->loadCount(Post::COUNTED_RELATIONS);
     }
 
     public function update(array $data, Post $post): Post
     {
-        $newImagePath = null;
-        $oldImagePath = $post->image;
-        try {
-            if (isset($data['image'])) {
-                $newImagePath = $this->uploadFile($data['image'], 'posts');
-                $data['image'] = $newImagePath;
-            }
-            $post->update($data);
-            if ($newImagePath && $oldImagePath) {
-                $this->deleteFile($oldImagePath);
-            }
+        $attributes = Arr::only($data, ['body']);
+        $oldImage = $post->image;
+        $newImage = null;
 
-            return $post->load('user')->loadCount(['comments', 'likes', 'bookmarks', 'reposts']);
+        if (isset($data['image'])) {
+            $newImage = $this->uploadFile($data['image'], 'posts');
+            $attributes['image'] = $newImage;
+        } elseif (!empty($data['remove_image'])) {
+            $attributes['image'] = null;
+        }
+
+        try {
+            $post->update($attributes);
         } catch (Exception $e) {
-            if ($newImagePath) {
-                $this->deleteFile($newImagePath);
+            if ($newImage) {
+                $this->deleteFile($newImage);
             }
             throw $e;
+        }
+
+        if ($oldImage && array_key_exists('image', $attributes)) {
+            $this->deleteImageQuietly($oldImage);
+        }
+
+        return $this->withResourceData($post);
+    }
+
+    private function deleteImageQuietly(string $path): void
+    {
+        try {
+            $this->deleteFile($path);
+        } catch (Exception $e) {
+            Log::error('Failed to delete image: '.$e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+            ]);
         }
     }
 
     public function delete(Post $post): void
     {
         $imagePath = $post->image;
-        if ($post->delete()) {
-            if ($imagePath) {
-                try {
-                    $this->deleteFile($imagePath);
-                } catch (Exception $e) {
-                    Log::error('Failed to delete image: '.$e->getMessage(), [
-                        'stack' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
+        $post->delete();
+
+        if ($imagePath) {
+            $this->deleteImageQuietly($imagePath);
         }
     }
 }
