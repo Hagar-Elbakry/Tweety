@@ -10,14 +10,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class FeedService
 {
     private const PER_PAGE = 10;
-    private const COUNTS = ['comments', 'likes', 'bookmarks', 'reposts'];
 
     public function getTimeline(User $user): LengthAwarePaginator
     {
         $userIds = $user->following()->pluck('users.id')->push($user->id);
 
         $posts = Post::whereIn('user_id', $userIds)
-            ->withCount(self::COUNTS)
+            ->withCount(Post::COUNTED_RELATIONS)
             ->with('user')
             ->get()
             ->map(fn($post) => [
@@ -29,7 +28,7 @@ class FeedService
         $reposts = PostRepost::whereIn('user_id', $userIds)
             ->with([
                 'user',
-                'post' => fn($query) => $query->withCount(self::COUNTS)->with('user'),
+                'post' => fn($query) => $query->withCount(Post::COUNTED_RELATIONS)->with('user'),
             ])
             ->get()
             ->map(fn($repost) => [

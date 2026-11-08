@@ -16,6 +16,8 @@ class Post extends Model
 {
     use Markable;
 
+    public const COUNTED_RELATIONS = ['comments', 'likes', 'bookmarks', 'reposts'];
+
     protected static $marks = [
         Like::class,
         Bookmark::class,
